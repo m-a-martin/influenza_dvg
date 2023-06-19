@@ -1,0 +1,5 @@
+the DVG present in the most samples is NS 316 545
+which is present in 197 out of 217 samples
+the next most prevalent DVG is present in 31 samples
+6098 out of 
+7481 DVGs are present in only a single sample

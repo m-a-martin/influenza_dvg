@@ -1,0 +1,11 @@
+there are 52 household pairs in the mccrone data
+
+of these, 47 have a genetic distance below the L1-norm cutoff
+of these, 39 are from H3N2 infections
+among community samples there are an average of 0.385062914355297 [1.025395461238044] shared DVGs
+among household samples there are an average of 0.5384615384615384 [1.2321601452253605] shared DVGs
+Mann-Whitney U test comparing the number of shared DVGs among community and household samples statistic = 146752.0, p-value = 0.7877109346036038
+In total 21 DVGs from 9 transmission pairs are shared between donor and recipient
+shared DVGs have mean [sd] donor relative read support of 0.00021950494742972536 [0.0005374640052699402]
+non-shared DVGs have mean [sd] donor relative read support of 0.0001911643959987792 [0.001130397801154924]
+mann-whitney u test p-value comparing the relative support of shared and non-shared DVGs = 0.6475972590238088

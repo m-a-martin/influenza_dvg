@@ -1,0 +1,28 @@
+Kruskal-Wallis H-test for independent samples of the number of unique DVGs per sample grouped by the number of days post symptom onset p value = 0.06293187639435206
+median [sd] number of unique DVGs per sample for samples taken 6 days post onset = 6.0 [14.055445761538675]
+median [sd] number of unique DVGs per sample for samples taken <6 days post onset = 19.0[53.51874218155362]
+Kruskal-Wallis H-test for independent samples of the total relative read support per sample grouped by the number of days post symptom onset p value = 0.08318024028769043
+median [sd] number of total relative DVG reads per sample for samples taken 6 days post onset = 0.0014976395795284 [0.0008048418365105677]
+median [sd] number of total relative DVG reads per sample for samples taken <6 days post onset = 0.003182331596746328[0.01935986283218305]
+logistic regression p value using t_0 relative read support as a predictor for persistent/non-persistent DVGs for DVGs sampled 1 day appart 2.1443077689785655e-21
+                           Logit Regression Results                           
+==============================================================================
+Dep. Variable:                 shared   No. Observations:                  751
+Model:                          Logit   Df Residuals:                      749
+Method:                           MLE   Df Model:                            1
+Date:                Mon, 19 Jun 2023   Pseudo R-squ.:                  0.1180
+Time:                        14:18:43   Log-Likelihood:                -416.36
+converged:                       True   LL-Null:                       -472.04
+Covariance Type:            nonrobust   LLR p-value:                 4.929e-26
+=======================================================================================
+                          coef    std err          z      P>|z|      [0.025      0.975]
+---------------------------------------------------------------------------------------
+Intercept               7.1667      0.835      8.585      0.000       5.531       8.803
+log10_rel_0_support     1.9646      0.207      9.498      0.000       1.559       2.370
+=======================================================================================
+chi2 test of independence p value comparing counts of persistent/non-persistent DVGs as a function of time between samples =  1.2040851055919063e-22
+model fit to the persistent of DVGs as a funciton of time between samples
+with the functional form r((1-p)^t) has paramters (r,p) of 
+[0.54128128 0.12378701]
+the 99th percentile of observed relative read support is -2.477176371247539 and it would be predicted to have a 0    0.908883
+dtype: float64 probability of persisting

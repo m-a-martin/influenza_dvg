@@ -1,0 +1,3 @@
+DVGs observed in 217/217 SPECIDS
+mann whitney u test comparing relative DVG read support on PB2, PB1, PA, NS v. HA, NP. NA, M: statistic=644321.0; pvalue=6.552502763356777e-148
+Mann-Whtiney U test comparing number of unique DVGs per sample on PB2, PB1, PA v. HA, NP, NA, M, NS: statistic=589055.5; pvalue=2.1199110238276192e-124
