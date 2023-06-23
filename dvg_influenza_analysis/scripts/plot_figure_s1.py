@@ -68,7 +68,7 @@ def run():
 	output[-1] += f'DVGs are present in only a single sample'
 
 
-	with open('figures/final/figure_s1.txt', 'w') as fp:
+	with open('dvg_influenza_analysis/figures/final/figure_s1.txt', 'w') as fp:
 		for line in output:
 			fp.write(line+'\n')
 
@@ -84,7 +84,7 @@ def run():
 	ax.grid(axis='both', color='#eaeaea', zorder=0)
 	ax.set_yscale('log')
 	ax.set_title('S1 Fig')
-	fig.savefig('figures/final/figure_s1.pdf')
+	fig.savefig('dvg_influenza_analysis/figures/final/figure_s1.pdf')
 	plt.close()
 
 

@@ -200,7 +200,7 @@ def run():
 	output[-1] += f' and it would be predicted to have a {prob_99th_persist} probability of persisting'
 
 
-	with open('figures/final/figure_3.txt', 'w') as fp:
+	with open('dvg_influenza_analysis/figures/final/figure_3.txt', 'w') as fp:
 		for line in output:
 			fp.write(line+'\n')
 
@@ -309,7 +309,7 @@ def run():
 				string.ascii_uppercase[ax_idx], color='#333333', 
 				transform=ax.transAxes, size=16, fontweight='bold')
 
-	fig.savefig('figures/final/figure_3.pdf')
+	fig.savefig('dvg_influenza_analysis/figures/final/figure_3.pdf')
 	plt.close()
 
 

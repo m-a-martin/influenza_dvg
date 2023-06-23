@@ -33,17 +33,17 @@ def run():
 	run_table['type'] = run_table['Isolate'].apply(lambda k: 'clinical' if not 'plasma' in k  else 'plasmid')
 	lib_runs = run_table[run_table['lib'].isin(args.libs)].drop_duplicates()
 	lib_runs['days_post_onset'] = lib_runs['SPECID'].map(date_dict)
-	lib_runs.sort_values(by='type').to_csv('data/all_runs.tsv', sep='\t', index=None)
+	lib_runs.sort_values(by='type').to_csv('dvg_influenza_analysis/data/all_runs.tsv', sep='\t', index=None)
 	lib_runs_counts	= lib_runs[['Run', 'lib', 'type']].\
 		drop_duplicates().groupby(['lib', 'type']).size().\
 		reset_index()
-	lib_runs_counts.to_csv('data/lib_runs_counts.tsv', sep='\t', index=None)
+	lib_runs_counts.to_csv('dvg_influenza_analysis/data/lib_runs_counts.tsv', sep='\t', index=None)
 	lib_specids_counts = lib_runs[['SPECID', 'lib', 'type']].copy()
 	lib_specids_counts['lib'] = lib_specids_counts['lib'].apply(
 			lambda k: ''.join([i for i in k.split('_')[0] if not i.isdigit()]))
 	lib_specids_counts = lib_specids_counts.drop_duplicates().groupby(['lib', 'type']).size().\
 		reset_index()
-	lib_specids_counts.to_csv('data/lib_specids_counts.tsv', sep='\t', index=None)
+	lib_specids_counts.to_csv('dvg_influenza_analysis/data/lib_specids_counts.tsv', sep='\t', index=None)
 	# count number of samples
 	enrollid_runs_counts = \
 		lib_runs[['Isolate', 'lib', 'type']].copy()
@@ -52,14 +52,14 @@ def run():
 		lambda k: ''.join([i for i in k.split('_')[0] if not i.isdigit()]))
 	enrollid_runs_counts = enrollid_runs_counts.drop_duplicates().groupby(
 			['lib', 'type']).size().reset_index()
-	enrollid_runs_counts.to_csv('data/enrollids_runs_counts.tsv', sep='\t', index=None)
+	enrollid_runs_counts.to_csv('dvg_influenza_analysis/data/enrollids_runs_counts.tsv', sep='\t', index=None)
 	# count number of longitudinal samples
 	n_longitudinal =  lib_runs[lib_runs['type'] == 'clinical'][['Isolate', 'SPECID', 'days_post_onset']].\
 	groupby('Isolate').apply(lambda k: 
 		k['SPECID'].unique().shape[0] > 1).sum()
 	output = []
 	output.append(f'there are {n_longitudinal} individuals with longitudinal samples')
-	with open('data/stats.tsv', 'w') as fp:
+	with open('dvg_influenza_analysis/data/stats.tsv', 'w') as fp:
 		for line in output:
 			fp.write(line+'\n')
 	# from data directory

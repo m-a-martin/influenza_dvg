@@ -11,13 +11,13 @@ try:
 except:
 	from scripts.utils import plot_style, jitter_boxplot
 	
-
+	
 def run():
 	parser = argparse.ArgumentParser()
 	# input files
 	parser.add_argument('--dataDir', default=None)
 	parser.add_argument('--cutoff', default=10, type=int)
-	parser.add_argument('--segmentAcc', default='data/acc_segment.tsv')
+	parser.add_argument('--segmentAcc', default='dvg_influenza_analysis/data/acc_segment.tsv')
 	parser.add_argument('--allRuns', default=None)
 	args = parser.parse_args()
 	#args.allRuns = 'data/all_runs.tsv'
@@ -69,7 +69,7 @@ def run():
 	output.append(f'all: {np.median(pd.concat(segment_read_support_per_dvg.values()).values)}')
 	output[-1] += f' [{np.std(pd.concat(segment_read_support_per_dvg.values()).values)}]'
 	output.append(f'{(all_plasmid_dat["Total_support"] < 10).sum()/all_plasmid_dat.shape[0]} of DVGs supported by <10 reads')
-	with open('figures/final/figure_1.txt', 'w') as fp:
+	with open('dvg_influenza_analysis/figures/final/figure_1.txt', 'w') as fp:
 		for line in output:
 			fp.write(line + '\n')
 	plot_style()
@@ -102,7 +102,7 @@ def run():
 			transform=ax.transAxes, size=16, fontweight='bold')
 
 	plot_style()
-	fig.savefig(f'figures/final/figure_1.pdf')
+	fig.savefig(f'dvg_influenza_analysis/figures/final/figure_1.pdf')
 	plt.close()
 
 

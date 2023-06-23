@@ -168,7 +168,7 @@ def run():
 
 	output.append(f'mann-whitney u test p-value comparing the relative support of shared and non-shared DVGs = {mwu.pvalue}')
 
-	with open('figures/final/figure_4.txt', 'w') as fp:
+	with open('dvg_influenza_analysis/figures/final/figure_4.txt', 'w') as fp:
 		for line in output:
 			fp.write(line+'\n')
 
@@ -213,10 +213,10 @@ def run():
 	axs[2].grid(color='#eaeaea', zorder=0)
 	axs[2].set_title('shared DVGs')
 	axs[2].set_xlabel(r'$log_{10}$(relative read support)', size=mpl.rcParams['axes.titlesize'])
-	fig.savefig('figures/final/figure_4.pdf')
+	fig.savefig('dvg_influenza_analysis/figures/final/figure_4.pdf')
 	plt.close()
 
-	with open('figures/final/figure_4.txt', 'w') as fp:
+	with open('dvg_influenza_analysis/figures/final/figure_4.txt', 'w') as fp:
 		for line in output:
 			fp.write(line + '\n')
 

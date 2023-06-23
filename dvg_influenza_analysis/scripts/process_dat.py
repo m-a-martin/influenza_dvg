@@ -121,7 +121,7 @@ def run():
 		replicate_dat['mapped_stop'] = \
 			replicate_dat.apply(lambda k: map_dict[k['Segment']][k['Stop']], axis=1)
 	replicate_dat['enrollid'] = replicate_dat['Specid'].map(enrollid_dict)
-	replicate_dat.to_csv('output/parsed_dvgs.tsv', sep='\t', index=None)
+	replicate_dat.to_csv('dvg_influenza_analysis/output/parsed_dvgs.tsv', sep='\t', index=None)
 
 
 

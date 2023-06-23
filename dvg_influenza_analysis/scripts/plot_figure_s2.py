@@ -60,7 +60,7 @@ def run():
 	plot_style()
 	n_segs = dat['segment'].unique().shape[0]
 	# group by specid and for each plot junction
-	with PdfPages('figures/final/figure_s2.pdf') as pdf:
+	with PdfPages('dvg_influenza_analysis/figures/final/figure_s2.pdf') as pdf:
 		for page in set(specid_page.values()):
 			page_dat = dat[dat['Specid'].map(specid_page) == page]
 			#fig, axs = plt.subplots(n_per_page, n_segs,

@@ -1,0 +1,51 @@
+Feb-07 17:08:35.542 [main] DEBUG nextflow.cli.Launcher - $> /home/mmart59/miniconda3/envs/dip/bin/nextflow run -c ../Influenza-virus-DI-identification-pipeline/new-config-files/2014_2015_h3n2.conf ../Influenza-virus-DI-identification-pipeline/full-pipeline-customizable-mm.nf
+Feb-07 17:08:35.776 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 0.24.2
+Feb-07 17:08:35.802 [main] INFO  nextflow.cli.CmdRun - Launching `../Influenza-virus-DI-identification-pipeline/full-pipeline-customizable-mm.nf` [tiny_lichterman] - revision: 578a7b990b
+Feb-07 17:08:35.870 [main] DEBUG nextflow.config.ConfigBuilder - User config file: ../Influenza-virus-DI-identification-pipeline/new-config-files/2014_2015_h3n2.conf
+Feb-07 17:08:35.871 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /projects/GII4evolution/mmartin/Influenza-virus-DI-identification-pipeline/new-config-files/2014_2015_h3n2.conf
+Feb-07 17:08:36.222 [main] DEBUG nextflow.config.ConfigBuilder - Setting config profile: 'standard'
+Feb-07 17:08:36.354 [main] DEBUG nextflow.Session - Session uuid: 8ec493f5-3de0-49d4-9e7a-8bb83cb343ce
+Feb-07 17:08:36.354 [main] DEBUG nextflow.Session - Run name: tiny_lichterman
+Feb-07 17:08:36.355 [main] DEBUG nextflow.Session - Executor pool size: 2
+Feb-07 17:08:36.370 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 0.24.2 build 4271
+  Modified: 05-04-2017 16:50 UTC (12:50 EDT)
+  System: Linux 4.18.0-193.6.3.el8_2.x86_64
+  Runtime: Groovy 2.4.10 on OpenJDK 64-Bit Server VM 1.8.0_152-release-1056-b12
+  Encoding: UTF-8 (UTF-8)
+  Process: 194484@node23 [192.168.0.23]
+  CPUs: 1 - Mem: 187.6 GB (88.7 GB) - Swap: 32 GB (1,016.1 MB)
+Feb-07 17:08:36.438 [main] DEBUG nextflow.Session - Work-dir: /projects/GII4evolution/mmartin/Influenza-virus-DI-identification-pipeline/work [panfs]
+Feb-07 17:08:36.438 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /projects/GII4evolution/mmartin/Influenza-virus-DI-identification-pipeline/bin
+Feb-07 17:08:36.716 [main] DEBUG nextflow.Session - Session start invoked
+Feb-07 17:08:36.718 [main] DEBUG nextflow.processor.TaskDispatcher - Dispatcher > start
+Feb-07 17:08:36.718 [main] DEBUG nextflow.script.ScriptRunner - > Script parsing
+Feb-07 17:08:36.930 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Feb-07 17:08:36.949 [main] DEBUG nextflow.Session - Session aborted -- Cause: Missing `fromFilePairs` parameter
+Feb-07 17:08:36.953 [main] DEBUG nextflow.cli.Launcher - Operation aborted
+nextflow.exception.AbortOperationException: Missing `fromFilePairs` parameter
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.codehaus.groovy.reflection.CachedConstructor.invoke(CachedConstructor.java:83)
+	at org.codehaus.groovy.runtime.callsite.ConstructorSite$ConstructorSiteNoUnwrapNoCoerce.callConstructor(ConstructorSite.java:105)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallConstructor(CallSiteArray.java:60)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:235)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:247)
+	at nextflow.Channel.fromFilePairs(Channel.groovy:457)
+	at nextflow.Channel$fromFilePairs$0.callStatic(Unknown Source)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallStatic(CallSiteArray.java:56)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:194)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:222)
+	at nextflow.Channel.fromFilePairs(Channel.groovy:453)
+	at nextflow.Channel$fromFilePairs.call(Unknown Source)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:48)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:113)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:133)
+	at _nf_script_94ff2961.run(_nf_script_94ff2961:10)
+	at nextflow.script.ScriptRunner.run(ScriptRunner.groovy:322)
+	at nextflow.script.ScriptRunner.execute(ScriptRunner.groovy:156)
+	at nextflow.cli.CmdRun.run(CmdRun.groovy:223)
+	at nextflow.cli.Launcher.run(Launcher.groovy:410)
+	at nextflow.cli.Launcher.main(Launcher.groovy:564)

@@ -5,6 +5,8 @@ try:
 	from utils import import_fasta
 except:
 	from scripts.utils import import_fasta
+except:
+	from dvg_influenza_analysis.scripts.utils import import_fasta
 
 
 def run():

@@ -12,6 +12,7 @@ try:
 	from utils import plot_style, filter_dvg_dat, format_map_dict, jitter_boxplot
 except:
 	from scripts.utils import plot_style, filter_dvg_dat, format_map_dict, jitter_boxplot
+	
 
 def get_coding_region(f, map_dict):
 		gene_dat = pd.read_csv(f, sep='\t', comment='#', header=None)
@@ -122,7 +123,7 @@ def run():
 	output[-1] += f': statistic={t2.statistic}; pvalue={t2.pvalue}' 
 	
 
-	with open('figures/final/figure_2.txt', 'w') as fp:
+	with open('dvg_influenza_analysis/figures/final/figure_2.txt', 'w') as fp:
 		for line in output:
 			fp.write(line + '\n')
 
@@ -224,7 +225,7 @@ def run():
 				string.ascii_uppercase[ax_idx], color='#333333', 
 				transform=ax.transAxes, size=18, fontweight='bold')
 
-	fig.savefig('figures/final/figure_2.pdf')
+	fig.savefig('dvg_influenza_analysis/figures/final/figure_2.pdf')
 	plt.close()
 
 

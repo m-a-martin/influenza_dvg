@@ -10,8 +10,8 @@ logistic regression p value using t_0 relative read support as a predictor for p
 Dep. Variable:                 shared   No. Observations:                  751
 Model:                          Logit   Df Residuals:                      749
 Method:                           MLE   Df Model:                            1
-Date:                Mon, 19 Jun 2023   Pseudo R-squ.:                  0.1180
-Time:                        14:18:43   Log-Likelihood:                -416.36
+Date:                Fri, 23 Jun 2023   Pseudo R-squ.:                  0.1180
+Time:                        10:47:40   Log-Likelihood:                -416.36
 converged:                       True   LL-Null:                       -472.04
 Covariance Type:            nonrobust   LLR p-value:                 4.929e-26
 =======================================================================================

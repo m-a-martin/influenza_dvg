@@ -3,8 +3,8 @@
 Dep. Variable:                 shared   No. Observations:                 1514
 Model:                          Logit   Df Residuals:                     1507
 Method:                           MLE   Df Model:                            6
-Date:                Mon, 19 Jun 2023   Pseudo R-squ.:                  0.1360
-Time:                        14:22:26   Log-Likelihood:                -712.43
+Date:                Fri, 23 Jun 2023   Pseudo R-squ.:                  0.1360
+Time:                        10:56:21   Log-Likelihood:                -712.43
 converged:                       True   LL-Null:                       -824.57
 Covariance Type:            nonrobust   LLR p-value:                 1.275e-45
 =======================================================================================

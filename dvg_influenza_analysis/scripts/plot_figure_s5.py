@@ -101,7 +101,7 @@ def run():
 		[-3, 3],
 		[-2, 3]], columns=['log10_rel_0_support', 'tspan']))))
 
-	with open('figures/final/figure_s5.txt', 'w') as fp:
+	with open('dvg_influenza_analysis/figures/final/figure_s5.txt', 'w') as fp:
 			for line in output:
 				fp.write(line+'\n')
 
@@ -149,7 +149,7 @@ def run():
 					string.ascii_uppercase[ax_idx], color='#333333', 
 					transform=ax.transAxes, size=16, fontweight='bold')
 	fig.suptitle('S5 Fig')
-	fig.savefig('figures/final/figure_s5.pdf')
+	fig.savefig('dvg_influenza_analysis/figures/final/figure_s5.pdf')
 	plt.close()
 
 

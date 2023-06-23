@@ -38,8 +38,8 @@ def format_map_dict(map_files):
     map_dfs = [pd.read_csv(i, sep='\t', index_col=0) for i in map_files]
     map_dict = {}
     for seg_map in map_dfs:
-        for name, name_map in seg_map.iteritems():
-            map_dict[name] = {int(i):idx for idx, i in name_map.iteritems() if not pd.isna(i)} 
+        for name, name_map in seg_map.items():
+            map_dict[name] = {int(i):idx for idx, i in name_map.items() if not pd.isna(i)} 
     return(map_dict)
 
 

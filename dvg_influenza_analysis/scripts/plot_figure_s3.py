@@ -37,7 +37,7 @@ def run():
 	fig.suptitle('S3 Fig')
 	fig.supxlabel('deleted nucleotides', size=16)
 	fig.supylabel('DVG count', size=16)
-	fig.savefig(f'figures/final/figure_s3.pdf')
+	fig.savefig(f'dvg_influenza_analysis/figures/final/figure_s3.pdf')
 	plt.close('all')
 
 

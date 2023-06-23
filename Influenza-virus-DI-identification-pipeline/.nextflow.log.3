@@ -1,0 +1,118 @@
+Feb-07 17:07:53.034 [main] DEBUG nextflow.cli.Launcher - $> /home/mmart59/miniconda3/envs/dip/bin/nextflow run -c ../Influenza-virus-DI-identification-pipeline/new-config-files/2014_2015_h3n2.conf ../Influenza-virus-DI-identification-pipeline/full-pipeline-customizable-mm.nf
+Feb-07 17:07:53.250 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 0.24.2
+Feb-07 17:07:53.258 [main] INFO  nextflow.cli.CmdRun - Launching `../Influenza-virus-DI-identification-pipeline/full-pipeline-customizable-mm.nf` [amazing_gates] - revision: fe061f8a18
+Feb-07 17:07:53.328 [main] DEBUG nextflow.config.ConfigBuilder - User config file: ../Influenza-virus-DI-identification-pipeline/new-config-files/2014_2015_h3n2.conf
+Feb-07 17:07:53.329 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /projects/GII4evolution/mmartin/Influenza-virus-DI-identification-pipeline/new-config-files/2014_2015_h3n2.conf
+Feb-07 17:07:53.682 [main] DEBUG nextflow.config.ConfigBuilder - Setting config profile: 'standard'
+Feb-07 17:07:53.811 [main] DEBUG nextflow.Session - Session uuid: c1dcec05-5c0c-4afc-99ca-78125921bac4
+Feb-07 17:07:53.811 [main] DEBUG nextflow.Session - Run name: amazing_gates
+Feb-07 17:07:53.813 [main] DEBUG nextflow.Session - Executor pool size: 2
+Feb-07 17:07:53.833 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 0.24.2 build 4271
+  Modified: 05-04-2017 16:50 UTC (12:50 EDT)
+  System: Linux 4.18.0-193.6.3.el8_2.x86_64
+  Runtime: Groovy 2.4.10 on OpenJDK 64-Bit Server VM 1.8.0_152-release-1056-b12
+  Encoding: UTF-8 (UTF-8)
+  Process: 194430@node23 [192.168.0.23]
+  CPUs: 1 - Mem: 187.6 GB (84.7 GB) - Swap: 32 GB (1,016.1 MB)
+Feb-07 17:07:54.059 [main] DEBUG nextflow.Session - Work-dir: /projects/GII4evolution/mmartin/Influenza-virus-DI-identification-pipeline/work [panfs]
+Feb-07 17:07:54.060 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /projects/GII4evolution/mmartin/Influenza-virus-DI-identification-pipeline/bin
+Feb-07 17:07:54.280 [main] DEBUG nextflow.Session - Session start invoked
+Feb-07 17:07:54.282 [main] DEBUG nextflow.processor.TaskDispatcher - Dispatcher > start
+Feb-07 17:07:54.282 [main] DEBUG nextflow.script.ScriptRunner - > Script parsing
+Feb-07 17:07:54.493 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Feb-07 17:07:54.516 [main] DEBUG nextflow.Channel - files for syntax: glob; folder: /; pattern: *_R{1,2}_001.fastq.gz; options: [:]
+Feb-07 17:07:54.670 [Actor Thread 1] ERROR n.extension.DataflowExtensions - @unknown
+nextflow.exception.ProcessNotRecoverableException: Cannot find any reads matching: /projects/GII4evolution/mmartin/influenza_dvg_mccrone/data/*_{1,2}.fastq
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.codehaus.groovy.reflection.CachedConstructor.invoke(CachedConstructor.java:83)
+	at org.codehaus.groovy.runtime.callsite.ConstructorSite$ConstructorSiteNoUnwrapNoCoerce.callConstructor(ConstructorSite.java:105)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallConstructor(CallSiteArray.java:60)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:235)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:247)
+	at nextflow.Nextflow.error(Nextflow.groovy:260)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:93)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:325)
+	at org.codehaus.groovy.runtime.callsite.StaticMetaMethodSite$StaticMetaMethodSiteNoUnwrap.invoke(StaticMetaMethodSite.java:133)
+	at org.codehaus.groovy.runtime.callsite.StaticMetaMethodSite.callStatic(StaticMetaMethodSite.java:102)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallStatic(CallSiteArray.java:56)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:194)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:206)
+	at _nf_script_550e72a8$_run_closure1.doCall(_nf_script_550e72a8:12)
+	at _nf_script_550e72a8$_run_closure1.doCall(_nf_script_550e72a8)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:93)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:325)
+	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:294)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1027)
+	at org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.call(PogoMetaClassSite.java:42)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:48)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:113)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:117)
+	at nextflow.extension.DataflowExtensions$_ifEmpty_closure51.doCall(DataflowExtensions.groovy:1766)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:93)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:325)
+	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:294)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1027)
+	at org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.call(PogoMetaClassSite.java:42)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:48)
+	at groovy.lang.Closure$call.call(Unknown Source)
+	at nextflow.extension.DataflowExtensions$2.afterStop(DataflowExtensions.groovy:265)
+	at groovyx.gpars.dataflow.operator.DataflowProcessor.fireAfterStop(DataflowProcessor.java:324)
+	at groovyx.gpars.dataflow.operator.DataflowProcessorActor.afterStop(DataflowProcessorActor.java:59)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:93)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:325)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1218)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1027)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokePojoMethod(InvokerHelper.java:913)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:904)
+	at groovyx.gpars.actor.Actor.callDynamic(Actor.java:369)
+	at groovyx.gpars.actor.Actor.handleTermination(Actor.java:320)
+	at groovyx.gpars.actor.AbstractLoopingActor.terminate(AbstractLoopingActor.java:204)
+	at groovyx.gpars.dataflow.operator.DataflowProcessor.terminate(DataflowProcessor.java:147)
+	at groovyx.gpars.dataflow.operator.DataflowProcessorActor.checkPoison(DataflowProcessorActor.java:115)
+	at groovyx.gpars.dataflow.operator.DataflowOperatorActor.onMessage(DataflowOperatorActor.java:83)
+	at groovyx.gpars.actor.impl.SDAClosure$1.call(SDAClosure.java:43)
+	at groovyx.gpars.actor.AbstractLoopingActor.runEnhancedWithoutRepliesOnMessages(AbstractLoopingActor.java:293)
+	at groovyx.gpars.actor.AbstractLoopingActor.access$400(AbstractLoopingActor.java:30)
+	at groovyx.gpars.actor.AbstractLoopingActor$1.handleMessage(AbstractLoopingActor.java:93)
+	at groovyx.gpars.util.AsyncMessagingCore.run(AsyncMessagingCore.java:132)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Feb-07 17:07:54.676 [Actor Thread 1] DEBUG nextflow.Session - Session aborted -- Cause: Cannot find any reads matching: /projects/GII4evolution/mmartin/influenza_dvg_mccrone/data/*_{1,2}.fastq
+Feb-07 17:07:54.770 [main] DEBUG nextflow.processor.ProcessFactory - << taskConfig executor: local
+Feb-07 17:07:54.770 [main] DEBUG nextflow.processor.ProcessFactory - >> processorType: 'local'
+Feb-07 17:07:54.789 [main] DEBUG nextflow.executor.Executor - Initializing executor: local
+Feb-07 17:07:54.790 [main] INFO  nextflow.executor.Executor - [warm up] executor > local
+Feb-07 17:07:54.895 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=1; memory=187.6 GB; capacity=1; pollInterval=100ms; dumpInterval=5m
+Feb-07 17:07:54.898 [main] DEBUG nextflow.processor.TaskDispatcher - Starting monitor: LocalPollingMonitor
+Feb-07 17:07:54.898 [main] DEBUG n.processor.TaskPollingMonitor - >>> barrier register (monitor: local)
+Feb-07 17:07:54.921 [main] DEBUG nextflow.executor.Executor - Invoke register for executor: local
+Feb-07 17:07:54.951 [main] DEBUG nextflow.Session - >>> barrier register (process: trimmomatic)
+Feb-07 17:07:54.960 [Thread-2] DEBUG n.processor.TaskPollingMonitor - <<< barrier arrives (monitor: local)
+Feb-07 17:07:54.962 [main] DEBUG nextflow.processor.TaskProcessor - Creating operator > trimmomatic -- maxForks: 2
+Feb-07 17:07:54.987 [main] DEBUG nextflow.script.ScriptRunner - > Await termination 
+Feb-07 17:07:54.987 [main] DEBUG nextflow.Session - Session await
+Feb-07 17:07:54.987 [main] DEBUG nextflow.Session - Session await > all process finished
+Feb-07 17:07:54.987 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Feb-07 17:07:55.053 [main] DEBUG nextflow.CacheDB - Closing CacheDB done
+Feb-07 17:07:55.142 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye

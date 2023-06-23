@@ -94,7 +94,7 @@ def run():
 		values='Rel_support').fillna(0).reset_index()
 
 	plot_style()
-	with PdfPages('figures/final/figure_s4.pdf') as pdf:
+	with PdfPages('dvg_influenza_analysis/figures/final/figure_s4.pdf') as pdf:
 		for page in set(specid_page.values()):
 			page_dat = long_dat[long_dat['enrollid'].astype(str).map(specid_page) == page]
 			#fig, axs = plt.subplots(n_per_page, n_segs,
