@@ -177,7 +177,7 @@ process depth {
         samtools fixmate -@ $params.bowtie2CPU -O sam -m - - | \
         samtools sort -@ $params.bowtie2CPU -O sam | \
         samtools markdup -@ $params.bowtie2CPU -r -s -O sam - - | \
-        samtools idxstats  - > ${in_bam.baseName}_dp.tsv
+        samtools depth -aa  - > ${in_bam.baseName}_dp.tsv
     """
 }
 
