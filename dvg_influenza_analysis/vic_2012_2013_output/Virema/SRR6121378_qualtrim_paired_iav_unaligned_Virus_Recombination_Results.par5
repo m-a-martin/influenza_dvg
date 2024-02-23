@@ -1,0 +1,5 @@
+Segment	Start	Stop	Forward_support	Reverse_support	Total_support	Fuzz_factor
+KJ942686.1	833	1929	3	2	5	833
+KJ942687.1	258	2352	5	0	5	258
+KJ942687.1	372	2261	3	2	5	372
+KJ942687.1	424	2395	7	2	9	424

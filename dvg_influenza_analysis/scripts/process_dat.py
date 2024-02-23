@@ -2,9 +2,11 @@ import argparse
 import pandas as pd
 import glob
 from collections import defaultdict
-from utils import format_map_dict
-import numpy as np
-
+try: 
+	from utils import format_map_dict
+except:
+	from scripts.utils import format_map_dict
+	
 
 def get_replicate_dat(run_table, dat):
 	replicate_dat = []
@@ -49,6 +51,7 @@ def run():
 	parser = argparse.ArgumentParser()
 	# input files
 	parser.add_argument('--runTable', default=None)
+	parser.add_argument('--titerTable', default=None)
 	parser.add_argument('--dataDir', default=None)
 	parser.add_argument('--dpDir', default=None)
 	parser.add_argument('--mapDir', default=None)
@@ -57,6 +60,8 @@ def run():
 	#args.runTable = 'data/SraRunTable.txt'
 	#args.dataDir = 'hk_2014_2015_output/Virema/*.par'
 	#args.dpDir = 'hk_2014_2015_output/depth/*_dp.tsv'
+	#args.titerTable = 'data/elife-35962-fig1-data1-v3.csv'
+	#args.mapDir = "data/*_map.tsv"
 	run_table = pd.read_csv(args.runTable)
 	run_table['lib'] = run_table['Library Name'].str.replace('_A', '').\
 		str.replace('_B', '').\
@@ -74,19 +79,19 @@ def run():
 	# read in all files in data directory
 	dir_files = glob.glob(args.dataDir)
 	# create mapping of id to actually directory
-	id_dir_dict = {i.split('/')[-1].split('both')[0]: i for i in dir_files}
+	id_dir_dict = {i.split('/')[-1].split('_')[0]: i for i in dir_files}
 	dat = {i: 
 		pd.read_csv(path, sep='\t') for i,path in id_dir_dict.items()}
 	# add relative support coumn
-	wt_dp_dat = {i.split('/')[-1].split('both')[0]: 
-				pd.read_csv(i, sep='\t', header=None,
-					names=['Segment', 'length', 'reads_mapped', 'reads_unmapped'])
+	wt_dp_dict = {i.split('/')[-1].split('_')[0]: 
+		{j[0]:j[1] for idx,j in pd.read_csv(i, sep='\t', header=None).\
+					rename(columns={0: 'seg', 1: 'pos', 2: 'dp'}).\
+					assign(mid_pos = lambda g: 
+						g.groupby('seg').pos.transform(lambda k: int(k.max()/2))).\
+					query('pos == mid_pos')[['seg', 'mid_pos']].iterrows()} 
 			for i in glob.glob(args.dpDir)}
 	for key, value in dat.items():
-		val_seg_dvg_reads = value.groupby(['Segment'])['Total_support'].sum()
-		val_seg_all_reads = wt_dp_dat[key].merge(val_seg_dvg_reads, on=['Segment'])
-		all_reads_dict = {i[0]: i[2]+i[4] for i in val_seg_all_reads.values}
-		value['Rel_support'] = value['Total_support']/value['Segment'].map(all_reads_dict)
+		value['Rel_support'] = value['Total_support']/value['Segment'].map(wt_dp_dict[key])
 	# for each library, 
 	# get set of identified DIPs if there is data 
 	plasmid_dat = {key: defaultdict(lambda: False) for key in plasmid_dict.keys()}
@@ -98,7 +103,6 @@ def run():
 	# only do this for non plasmid controls
 	replicate_dat = \
 		get_replicate_dat(run_table[~run_table['Isolate'].str.contains('plasma')], dat)
-	print(replicate_dat)
 	# for each row, add a bool for whether that dvg is in X plasmid and Y plasmid
 	# tuple ID for each dvg so we can look them up in the plasmid dat dictionaries 
 	dvgs = list(zip(replicate_dat['Segment'], replicate_dat['Start'], replicate_dat['Stop']))
@@ -120,8 +124,17 @@ def run():
 			replicate_dat.apply(lambda k: map_dict[k['Segment']][k['Start']], axis=1)
 		replicate_dat['mapped_stop'] = \
 			replicate_dat.apply(lambda k: map_dict[k['Segment']][k['Stop']], axis=1)
+
 	replicate_dat['enrollid'] = replicate_dat['Specid'].map(enrollid_dict)
-	replicate_dat.to_csv('dvg_influenza_analysis/output/parsed_dvgs.tsv', sep='\t', index=None)
+	# add sample titer information
+	if args.titerTable:
+		titers = pd.read_csv(args.titerTable, index_col=0).\
+			rename(columns={
+				'genomes.per.ul': 'genomes_per_ul',
+				'SPECID': 'Specid'})\
+			[['Specid', 'genomes_per_ul']]
+		replicate_dat = replicate_dat.merge(titers, on='Specid', how='left')
+	replicate_dat.to_csv('output/parsed_dvgs.tsv', sep='\t', index=None)
 
 
 

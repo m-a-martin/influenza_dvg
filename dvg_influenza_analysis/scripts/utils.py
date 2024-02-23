@@ -2,7 +2,25 @@ import numpy as np
 import pandas as pd
 
 
-def jitter_boxplot(ax, d, i, j=0.5, vert=True, zorder=4):
+
+
+def get_weighted_quantile(values, weights, quantile=0.5):
+    i = np.argsort(values)
+    c = np.cumsum(weights[i])
+    return values[i[np.searchsorted(c, quantile * c[-1])]]
+
+def get_weighted_mean(values, weights):
+    return(sum(values * weights)/sum(weights))
+
+def get_weighted_std(values, weights):
+    wt_mean = get_weighted_mean(values, weights)
+    numerator = (weights * ((values - wt_mean)**2)).sum()
+    denominator = ((values.shape[0]-1)/values.shape[0]) * weights.sum()
+    return(np.sqrt(numerator / denominator))
+
+
+
+def jitter_boxplot(ax, d, i, j=0.5, vert=True, zorder=4, w=None, point_alpha=1):
     # for each item in D get quantiles
     q = [np.quantile(i, q=[0.25, 0.5, 0.75]) for i in d]
     # for each item get outlier thresholds
@@ -18,15 +36,35 @@ def jitter_boxplot(ax, d, i, j=0.5, vert=True, zorder=4):
     # now flatten outliers
     outliers = np.hstack(outliers)
     # first boxplot without fliers
-    _ = ax.boxplot(d, positions=i,
-                sym = '',
-                medianprops=dict(color='steelblue'), vert=vert, zorder=zorder)
+    if not w:
+        _ = ax.boxplot(d, positions=i,
+                    sym = '',
+                    medianprops=dict(color='steelblue'), vert=vert, zorder=zorder,
+                    showmeans=True, meanline=True, meanprops=dict(color='darkseagreen'))
+    else:       
+        q1 = [get_weighted_quantile(d[idx], w[idx], 0.25) for idx in range(0,len(d))]
+        q3 = [get_weighted_quantile(d[idx], w[idx], 0.75) for idx in range(0,len(d))]
+        iqr = [i[1] - i[0] for i in zip(q1, q3)]
+        stats = [{
+                'mean': get_weighted_mean(d[idx], w[idx]),  # arithmetic mean value
+                'iqr': iqr[idx],  # 5.0,
+                'whishi': q3[idx] + 1.5*iqr[idx],  # end of the upper whisker
+                'whislo': q1[idx] - 1.5*iqr[idx],  # end of the lower whisker
+                'q1': q1[idx],  # first quartile (25th percentile)
+                'fliers': [],
+                'med': get_weighted_quantile(d[idx], w[idx], 0.5),  # 50th percentile
+                'q3': q3[idx]  # third quartile (75th percentile)}]
+                } for idx in range(0,len(d))]
+        print(stats)
+        _ = ax.bxp(stats, positions=i,  medianprops=dict(color='steelblue'), vert=vert, zorder=zorder, 
+            showmeans=True, meanline=True, meanprops=dict(color='darkseagreen'))
     # now add the fliers
     if vert:
-        _ = ax.scatter(outlier_x, outliers, edgecolor='#333333', facecolor="None", marker='o', zorder=zorder)
+        _ = ax.scatter(outlier_x, outliers, edgecolor='#333333', facecolor="None", marker='o', zorder=zorder, alpha=point_alpha)
     elif vert == False:
-         _ = ax.scatter(outliers, outlier_x, edgecolor='#333333', facecolor="None", marker='o', zorder=zorder)
+         _ = ax.scatter(outliers, outlier_x, edgecolor='#333333', facecolor="None", marker='o', zorder=zorder, alpha=point_alpha)
     return(ax)
+
 
 def map_arr(a, d):
     u,inv = np.unique(a,return_inverse = True)
@@ -44,7 +82,7 @@ def format_map_dict(map_files):
 
 
 
-def filter_dvg_dat(dat, only_shared=False, min_reads=0, min_del=0, filter_plasmid=False):
+def filter_dvg_dat(dat, only_shared=False, min_rel_reads=0, min_del=0, filter_plasmid=False):
     # replace nan support values with 0
     # if we want only shared DVGs
     # note: this *only* applies to samples with technical rpelicates
@@ -69,7 +107,7 @@ def filter_dvg_dat(dat, only_shared=False, min_reads=0, min_del=0, filter_plasmi
     # now combine and filter
     filtered_dat = pd.concat([replicated_dat, unreplicated_dat])
     filtered_dat = \
-        filtered_dat[(filtered_dat['Total_support'] >= min_reads)
+        filtered_dat[(filtered_dat['Rel_support'] >= min_rel_reads)
         & (filtered_dat['Stop'] - filtered_dat['Start'] >= min_del)]
     if filter_plasmid == True: 
         filtered_dat = filtered_dat[(filtered_dat['plasmid_x'] != True) & 
@@ -108,6 +146,17 @@ def format_seqs_arr(s, n_seqs):
 
 
 
+def import_seqs(fasta_path):
+    s_names = []
+    s_list = []
+    fh = open(fasta_path, 'rt')
+    with fh as fasta:
+        for h,s in read_fasta(fasta):
+            s_names.append(h)
+            s_list.append(s)
+    fh.close()    
+    return(np.array(s_names), s_list)
+
 def import_fasta(fasta_path):
     s_names = []
     all_s = ''
@@ -119,6 +168,31 @@ def import_fasta(fasta_path):
     fh.close()
     s_arr = format_seqs_arr(all_s, len(s_names))
     return(s_arr, np.array(s_names))
+
+
+def find_premature_stop(del_start, del_stop, cds, ref_seq):
+    # start and stop are 1-indexed
+    # cds is 0-indexed
+    # adjust start and stop
+    del_start -= 1
+    del_stop -= 1
+    # start and stop represent the last non-deleted base on the 3' end
+    # and the first non-deleted base on the 5' end
+    # arange doesn't include end point so don't need +1 
+    deleted_nucs = np.arange(del_start+1, del_stop)
+    dvg_seq = ref_seq.copy()
+    dvg_seq[deleted_nucs] = ''
+    # remove last three nucleotides,
+    # genbank records always include stop codon:
+    # https://www.ncbi.nlm.nih.gov/genbank/samplerecord/#:~:text=see%20alphabetical%20list).-,CDS,includes%20an%20amino%20acid%20translation.
+    dvg_cds = [''.join(dvg_seq[i][:-3]) for i in cds.values()]
+    # chunk and join
+    # turn into a set
+    # only care about presenceof premature stop, not location
+    dvg_seqs = [set([i[k:k+3] for k in range(0,len(i), 3)]) for i in dvg_cds]
+    stops = set(['TAA', 'TAG', 'TGA'])
+    premature = any([len(i & stops) > 0 for i in dvg_seqs])
+    return(premature)
 
 
 

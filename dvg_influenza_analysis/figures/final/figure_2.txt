@@ -1,3 +1,60 @@
-DVGs observed in 217/217 SPECIDS
-mann whitney u test comparing relative DVG read support on PB2, PB1, PA, NS v. HA, NP. NA, M: statistic=644321.0; pvalue=6.552502763356777e-148
-Mann-Whtiney U test comparing number of unique DVGs per sample on PB2, PB1, PA v. HA, NP, NA, M, NS: statistic=589055.5; pvalue=2.1199110238276192e-124
+total relative dvg read support by day post symptom onset (mean [sd]):
+-2 days: 2.9747196817864965 [0.0]
+-1 days: 0.7217841416132965 [0.0]
+0 days: 1.6028972645968307 [2.644792657545828]
+1 days: 2.628290902002288 [4.83331972197712]
+2 days: 2.7646711897020237 [4.066228032574668]
+3 days: 3.4843254869615494 [4.559671357494705]
+4 days: 2.1251049908589943 [1.9217256625817603]
+5 days: 2.07983497158313 [1.983933827660161]
+6 days: 0.3862473635226909 [0.4519389025583498]
+Kruskal-Wallis H-test for independent samples of the total relative read support per sample grouped by the number of days post symptom onset p value = 0.03285492794078119
+median [sd] number of total relative DVG reads per sample for samples taken 6 days post onset = 0.0859762163793519 [0.4519389025583498]
+median [sd] number of total relative DVG reads per sample for samples taken <6 days post onset = 0.8822871043490524[3.9850796169334894]
+ number of unique DVGs by day post symptom onset (mean [sd]):
+-2 days: 94.0 [0.0]
+-1 days: 34.0 [0.0]
+0 days: 45.95238095238095 [61.886334253588956]
+1 days: 65.33766233766234 [102.59232274124818]
+2 days: 66.67647058823529 [57.377347748062355]
+3 days: 83.0 [90.24612809624375]
+4 days: 65.3 [50.752438365067746]
+5 days: 74.0 [67.61656601750786]
+6 days: 28.666666666666668 [30.652170486860392]
+Kruskal-Wallis H-test for independent samples of the number of unique DVGs per sample grouped by the number of days post symptom onset p value = 0.06125931833908908
+median [sd] number of unique DVGs per sample for samples taken 6 days post onset = 8.0 [30.652170486860392]
+median [sd] number of unique DVGs per sample for samples taken <6 days post onset = 35.0[81.6400038352561]
+number of longitudinal samples stratified by time between samples
+tspan
+0.0     6
+1.0    24
+2.0     7
+3.0     9
+4.0     1
+6.0     2
+dtype: int64
+logistic regression p value using t_0 relative read support as a predictor for persistent/non-persistent DVGs for DVGs sampled 1 day appart 2.83057556949998e-31
+                           Logit Regression Results                           
+==============================================================================
+Dep. Variable:                 shared   No. Observations:                 1297
+Model:                          Logit   Df Residuals:                     1295
+Method:                           MLE   Df Model:                            1
+Date:                Fri, 16 Feb 2024   Pseudo R-squ.:                  0.1012
+Time:                        12:06:36   Log-Likelihood:                -707.42
+converged:                       True   LL-Null:                       -787.05
+Covariance Type:            nonrobust   LLR p-value:                 1.636e-36
+=======================================================================================
+                          coef    std err          z      P>|z|      [0.025      0.975]
+---------------------------------------------------------------------------------------
+Intercept               2.3434      0.281      8.330      0.000       1.792       2.895
+log10_rel_0_support     1.7786      0.153     11.632      0.000       1.479       2.078
+=======================================================================================
+chi2 test of independence p value comparing counts of persistent/non-persistent DVGs as a function of time between samples =  1.1133478883245581e-35
+model fit to the persistent of DVGs as a funciton of time between samples
+with the functional form r((1-p)^t) has paramters (r,p) of 
+[0.46312682 0.11096838]
+the 99th percentile of observed relative read support is -0.33304101912694256 and it would be predicted to have a 0    0.852091
+dtype: float64 probability of persisting
+probability of persisting with log10 relative support of -2 and 0 is 0    0.229034
+1    0.912412
+dtype: float64

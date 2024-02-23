@@ -1,225 +1,178 @@
-import glob 
-import string
+import argparse
 import pandas as pd
 import numpy as np
-import argparse
-from collections import defaultdict
-import matplotlib as mpl
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-import statsmodels.api as sm
-import statsmodels.formula.api as smf
-from scipy.stats import ttest_ind
-from scipy.stats import kstest
-from scipy.stats import mannwhitneyu
+from matplotlib import gridspec
+import string
+from scipy.stats import kruskal
 try: 
-	from utils import plot_style, format_map_dict, filter_dvg_dat
+	from utils import plot_style, jitter_boxplot
 except:
-	from scripts.utils import plot_style, format_map_dict, filter_dvg_dat
+	from scripts.utils import plot_style, jitter_boxplot
+
+
+def calc_h(dat):
+	if dat.shape[0] == 1:
+		return(0.0)
+	else:
+		pi = dat['Rel_support']/dat['Rel_support'].sum()
+		return(-1*(pi * np.log(pi)).sum())
+
+
+def calc_j(dat):
+	if dat.shape[0] == 1:
+		return(1)
+	else:
+		pi = dat['Rel_support']/dat['Rel_support'].sum()
+		h = -1*(pi * np.log(pi)).sum()
+		return(h / np.log(pi.shape[0]))
 
 
 def run():
 	parser = argparse.ArgumentParser()
+	# input files
+	# NEE DTO ADD ALL RUNS AND LIB
 	parser.add_argument('--allRuns', default=None)
 	parser.add_argument('--dat', default=None)
-	parser.add_argument('--pairDat', default=None)
 	args = parser.parse_args()
-
-	#args.dat = 'output/parsed_dvgs_10_True_True_500_PB2_PB1_PA.tsv'
+	#args.dat = 'output/parsed_dvgs_0.005_True_True_500_PB2_PB1_PA.tsv'
 	#args.allRuns = "data/all_runs.tsv"
-	#args.pairDat = 'data/elife-35962-fig3-data1-v3.csv'
+	#args.repEnrollID = '50538'
+	
+	# create an ordering of the specids, by sample date arbitrary
+	# first, subset run table to just samples we have
+	all_runs = pd.read_csv(args.allRuns, sep='\t')
+	all_runs = all_runs[(all_runs['type'] == 'clinical')]
+	
+	day_dict = {i['SPECID']:i['days_post_onset'] for 
+		idx,i in all_runs.iterrows()}
+
+	dat = pd.read_csv(args.dat, sep='\t')	
+
+	uniq_enrollids = \
+		np.unique(dat[['Specid', 'enrollid']].drop_duplicates()['enrollid'].values, return_counts=True)
+	keep_enrollids = uniq_enrollids[0][uniq_enrollids[1] > 1]
+	
+	# map days post symptom onset onto dat
+	dat['days_post_onset'] = dat['Specid'].map(day_dict)
+
+	# groupby and calculate shannon's diversity 
+	h_dict = {idx: i[0].values for idx, i in 
+		dat.groupby(['Specid', 'enrollid', 'days_post_onset']).\
+			apply(calc_h).reset_index().groupby('days_post_onset')}
+
+	# and evenness 
+	j_dict = {idx: i[0].values for idx, i in 
+		dat.groupby(['Specid', 'enrollid', 'days_post_onset']).\
+			apply(calc_j).reset_index().groupby('days_post_onset')}
 
 	output = []
-	pair_dat = pd.read_csv(args.pairDat)
-	output.append(f'there are {pair_dat.Household.sum()} household pairs in the mccrone data\n')
-	cutoff = pair_dat.\
-		query('Household == False').\
-		sort_values(by='L1_norm').\
-		assign(
-			n = lambda k: k.shape[0], 
-			idx = lambda k: np.arange(k.shape[0])).\
-		query('idx <= n*0.05')['L1_norm'].max()
+	h_t = kruskal(*list(h_dict.values()))
+	j_t = kruskal(*list(j_dict.values()))
+	output.append('Kruskal-Wallis H-test  ')
+	output[-1] += 'comparing diversity (H) of DVGs at each DPI '
+	output[-1] += f': statistic={h_t.statistic}; pvalue={h_t.pvalue}' 
+	output.append('Kruskal-Wallis H-test  ')
+	output[-1] += 'comparing diversity (J) of DVGs at each DPI '
+	output[-1] += f': statistic={j_t.statistic}; pvalue={j_t.pvalue}' 
 
-	pair_dat = pair_dat.\
-		assign(valid_household = lambda k: 
-			k.Household & (k.L1_norm <= cutoff))
-
-	output.append(f'of these, {pair_dat.valid_household.sum()} have a genetic distance below the L1-norm cutoff')
-
-	# map specid to enrollid 
-	# this serves two purposes
-	# 1) allows us to look at all DVGs across longitudinal samples from a single house
-	# 2) remove H1N1 pairs
-	all_runs = pd.read_csv(args.allRuns, sep='\t').\
-		query('type == "clinical"')
-	enrollid_dict = {i['SPECID']: i['Isolate'] for idx, i in all_runs.iterrows()}
-
-	pair_dat = pair_dat.\
-		assign(
-			enrollid_1 = lambda k: k.SPECID1.map(enrollid_dict),
-			enrollid_2 = lambda k: k.SPECID2.map(enrollid_dict)).\
-		query('~enrollid_1.isnull() & ~enrollid_2.isnull()')
-
-	output.append(f'of these, {pair_dat.valid_household.sum()} are from H3N2 infections')
-
-	# drop non-valid household pairs and add type column
-	pair_dat = pair_dat.query('~Household | (Household & valid_household)').\
-		assign(type = lambda k: (k.Household & k.valid_household).map({True: 'household', False: 'community'}))
-
-	# read in dvg dat 
-	dat = pd.read_csv(args.dat, sep='\t').assign(enrollid = lambda k: k.enrollid.astype(str))
-	# in the case of longitudinal samples, get maximum read support across the two
-	dat = dat[['enrollid', 'Segment', 'mapped_start', 'mapped_stop', 'Rel_support']].\
-		groupby(['enrollid', 'Segment', 'mapped_start', 'mapped_stop'])\
-		['Rel_support'].\
-		apply(max).reset_index()
-
-
-	all_pair_dat = []
-	np.random.seed(seed=111)
-	for pair_idx, pair in pair_dat.iterrows():
-		# when random community pair
-		# shuffle pair so it's random
-		# no true donor or recipient
-		pair_enrollids = pair[['enrollid_1', 'enrollid_2']].values
-		if pair.type == 'community':
-			np.random.shuffle(pair_enrollids)
-		pair_order = {i:idx for idx, i in enumerate(pair_enrollids)}
-		p_dat = dat.query('enrollid in @pair_enrollids')
-		p_dat = p_dat.assign(
-			pair = pair_idx,
-			pair_order = lambda k: k.enrollid.map(pair_order))
-		p_dat = p_dat.pivot(index=['pair', 'Segment', 'mapped_start', 'mapped_stop'], 
-			columns='pair_order', values='Rel_support').reset_index().fillna(0).\
-			rename(columns={0: 'rel_support_0', 1: 'rel_support_1'})
-		# if not dvgs in one of the samples
-		p_dat = p_dat.assign(
-			rel_support_0 = 
-				lambda k: k.rel_support_0 if 'rel_support_0' in k.columns else 0,
-			rel_support_1 = 
-				lambda k: k.rel_support_1 if 'rel_support_1' in k.columns else 0,
-			subject_0 = pair_enrollids[0],
-			subject_1 = pair_enrollids[1],
-			type = pair.type,
-			cat = lambda k: 
-				((k.rel_support_0 > 0).astype(str) + (k.rel_support_1 > 0).astype(str)).map(
-					{'TrueTrue': 'shared',
-					 'TrueFalse': 'donor_only',
-					 'FalseTrue': 'recipient_only'}))
-		all_pair_dat.append(p_dat)
-
-	all_pair_dat = pd.concat(all_pair_dat)
-
-	n_shared = all_pair_dat.query('cat == "shared" & type == "household"').shape[0]
-	n_shared_pairs = all_pair_dat.query('cat == "shared" & type == "household"').pair.drop_duplicates().shape[0]
-
-	all_pair_counted = \
-		all_pair_dat.groupby(['type', 'pair']).\
-			apply(lambda k: (k.cat == 'shared').sum()).\
-			reset_index().\
-			rename(columns={0:'num_shared'})
-
-
-	all_pair_counted_plot = \
-		all_pair_counted.\
-			groupby(['type', 'num_shared']).\
-			size().reset_index().\
-			rename(columns={0:'count'}).\
-			assign(
-				num_shared_x = lambda k: np.where(k['num_shared'] < 10, k['num_shared'], 10),
-				num_shared_label = lambda k: np.where(k['num_shared'] < 10, k['num_shared'].astype(str), "10+")).\
-			groupby(['type', 'num_shared_x', 'num_shared_label'])['count'].sum().\
-			reset_index().\
-			rename(columns={0:'count'}).\
-			assign(
-				total = lambda k: k.groupby('type')['count'].transform('sum'),
-				density = lambda k: k['count'] / k['total'])
-
-	#  mann whitney u 
-	t = mannwhitneyu(all_pair_counted.query('type == "household"').num_shared,
-		all_pair_counted.query('type == "community"').num_shared)
-
-	output.append(f'among community samples there are an average of ')
-	output[-1] += str(all_pair_counted.query("type == 'community'")['num_shared'].mean())
-	output[-1] += ' ['
-	output[-1] += str(all_pair_counted.query("type == 'community'")['num_shared'].std())
-	output[-1] += '] shared DVGs'
-
-	output.append(f'among household samples there are an average of ')
-	output[-1] += str(all_pair_counted.query("type == 'household'")['num_shared'].mean())
-	output[-1] += ' ['
-	output[-1] += str(all_pair_counted.query("type == 'household'")['num_shared'].std())
-	output[-1] += '] shared DVGs'
-
-	output.append(f'Mann-Whitney U test comparing the number of shared DVGs among community and household samples ')
-	output[-1] += f'statistic = {t.statistic}, p-value = {t.pvalue}'
-
-	output.append(f'In total {n_shared} DVGs from {n_shared_pairs} transmission pairs are shared between donor and recipient')
-	mean_shared = all_pair_dat.query("type == 'household' & cat == 'shared'")['rel_support_0'].mean()
-	sd_shared = all_pair_dat.query("type == 'household' & cat == 'shared'")['rel_support_0'].std()
-	output.append(f'shared DVGs have mean [sd] donor relative read support of {mean_shared} [{sd_shared}]')
-	mean_unshared = all_pair_dat.query("type == 'household' & cat == 'donor_only'")['rel_support_0'].mean()
-	sd_unshared = all_pair_dat.query("type == 'household' & cat == 'donor_only'")['rel_support_0'].std()
-	output.append(f'non-shared DVGs have mean [sd] donor relative read support of {mean_unshared} [{sd_unshared}]')
-	all_pair_dat.to_csv('pair_dat_test.tsv', sep='\t')
-	mwu = mannwhitneyu(
-		all_pair_dat.query("type == 'household' & cat == 'donor_only'")['rel_support_0'],
-		all_pair_dat.query("type == 'household' & cat == 'shared'")['rel_support_0'])
-
-	output.append(f'mann-whitney u test p-value comparing the relative support of shared and non-shared DVGs = {mwu.pvalue}')
-
-	with open('dvg_influenza_analysis/figures/final/figure_4.txt', 'w') as fp:
-		for line in output:
-			fp.write(line+'\n')
-
-	# now plot
-	plot_style()
-	fig, axs = plt.subplots(1, 3, figsize=(6.4*2.4, 4.8), constrained_layout=True)
-	axs[0].bar(
-		all_pair_counted_plot.query('type == "community"')['num_shared_x']-0.25,
-		all_pair_counted_plot.query('type == "community"')['density'],
-		width=0.5,
-		edgecolor='#333333',
-		facecolor='#4d4d4d',
-		label='unlinked pair', zorder=3)
-	axs[0].bar(
-		all_pair_counted_plot.query('type == "household"')['num_shared_x']+0.25,
-		all_pair_counted_plot.query('type == "household"')['density'],
-		width=0.5,
-		edgecolor='#333333',
-		facecolor='#eaeaea',
-		label='transmission pair', zorder=3)
-	axs[0].set_xticks(
-		ticks=all_pair_counted_plot[['num_shared_x', 'num_shared_label']].drop_duplicates()['num_shared_x'],
-		labels=all_pair_counted_plot[['num_shared_x', 'num_shared_label']].drop_duplicates()['num_shared_label'])
-	axs[0].set_xlabel('number of shared DVGs', size=mpl.rcParams['xtick.labelsize'])
-	axs[0].set_ylabel('density', size=mpl.rcParams['xtick.labelsize'])
-	axs[0].legend()
-	axs[0].grid(color='#eaeaea', zorder=0, axis='y')
-
-	axs[1].hist(
-		np.log10(all_pair_dat.query("type == 'household' & cat == 'donor_only'")['rel_support_0']),
-		bins = np.arange(np.floor(np.log10(all_pair_dat.query("type == 'household' & (cat == 'donor_only' | cat == 'shared')")['rel_support_0'].min())),
-			np.ceil(np.log10(all_pair_dat.query("type == 'household' & (cat == 'donor_only' | cat == 'shared')")['rel_support_0'].max())), 0.2),
-		facecolor='#eaeaea', edgecolor='#333333', density=True, label='non-shared', zorder=3)
-	axs[1].grid(color='#eaeaea', zorder=0)
-	axs[1].set_title('non-shared DVGs')
-	axs[1].set_xlabel(r'$log_{10}$(relative read support)', size=mpl.rcParams['axes.titlesize'])
-	axs[2].hist(
-		np.log10(all_pair_dat.query("type == 'household' & cat == 'shared'")['rel_support_0']),
-		bins = np.arange(np.floor(np.log10(all_pair_dat.query("type == 'household' & (cat == 'donor_only' | cat == 'shared')")['rel_support_0'].min())),
-			np.ceil(np.log10(all_pair_dat.query("type == 'household' & (cat == 'donor_only' | cat == 'shared')")['rel_support_0'].max())), 0.2),
-		facecolor='#eaeaea', edgecolor='#333333',  density=True, label='shared', zorder=3)
-	axs[2].grid(color='#eaeaea', zorder=0)
-	axs[2].set_title('shared DVGs')
-	axs[2].set_xlabel(r'$log_{10}$(relative read support)', size=mpl.rcParams['axes.titlesize'])
-	fig.savefig('dvg_influenza_analysis/figures/final/figure_4.pdf')
-	plt.close()
-
-	with open('dvg_influenza_analysis/figures/final/figure_4.txt', 'w') as fp:
+	with open('figures/final/figure_4.txt', 'w') as fp:
 		for line in output:
 			fp.write(line + '\n')
+	# get only DVGs present at both time points
+	persistent_dat = dat.\
+			merge(
+				dat[['enrollid', 'Specid']].\
+					drop_duplicates().\
+					groupby('enrollid').\
+					size().reset_index().\
+					rename(columns={0:'size'}).\
+					query('size > 1'),
+				on='enrollid',
+				how = 'inner').\
+		assign(within_host_order=lambda k: 1*(k.Specid.str[0:2] == 'MH')).\
+		groupby(['enrollid', 'Segment', 'segment', 'mapped_start', 'mapped_stop']).\
+		filter(lambda k: (k.days_post_onset.unique().shape[0] > 1))
 
+	persistent_h = persistent_dat.groupby(['Specid', 'enrollid', 'days_post_onset']).apply(calc_h).reset_index().\
+		pivot(index='enrollid', columns='days_post_onset', values=0)
+
+	seg_persistent_h = persistent_dat.\
+		groupby(['Specid', 'enrollid', 'segment', 'days_post_onset', 'within_host_order']).\
+		apply(calc_h).reset_index().\
+		pivot(index=['enrollid','segment'], columns='days_post_onset', values=0).reset_index()
+
+	persistent_j = persistent_dat.groupby(['Specid', 'enrollid', 'days_post_onset']).apply(calc_j).reset_index().\
+		pivot(index='enrollid', columns='days_post_onset', values=0)
+
+	seg_persistent_j = persistent_dat.\
+		groupby(['Specid', 'enrollid', 'segment', 'days_post_onset', 'within_host_order']).\
+		apply(calc_j).reset_index().\
+		pivot(index=['enrollid','segment'], columns='days_post_onset', values=0).reset_index()
+
+
+	plot_style()
+	#fig = plt.figure(figsize=(6.4*3, 4.8*2)) 
+	#gs = gridspec.GridSpec(2, 6)
+
+	#axs = [plt.subplot(gs[0,0:2]),
+	#	plt.subplot(gs[0,2:4]),
+	#	plt.subplot(gs[0,4:6])]
+	fig, axs_arr = plt.subplots(2,2, figsize=(6.4*2, 4.8*2), constrained_layout=True)
+	axs = axs_arr.flatten()
+	#axs[0].boxplot(h_dict.values(), 
+	#		positions=[int(i) for i in list(j_dict.keys())],
+	#		flierprops=dict(markeredgecolor='#333333'),
+	#		medianprops=dict(color='steelblue'))
+	axs[0] = jitter_boxplot(ax=axs[0], 
+			d=h_dict.values(),
+			i=[int(i) for i in list(h_dict.keys())],
+			j=0.25, vert=True, zorder=3)
+	axs[0].set_xlabel('\n', size=18)
+	axs[0].set_ylabel('$H$ (diversity)', size=18)
+	axs[0].grid(color='#eaeaea', zorder=0, axis='y')
+	#axs[1].boxplot(j_dict.values(), 
+	#		positions=[int(i) for i in list(j_dict.keys())],
+	#		flierprops=dict(markeredgecolor='#333333'),
+	#		medianprops=dict(color='steelblue'))
+	axs[1] = jitter_boxplot(ax=axs[1], 
+			d=j_dict.values(),
+			i=[int(i) for i in list(j_dict.keys())],
+			j=0.25, vert=True, zorder=3)
+	axs[1].set_xlabel('\n', size=18)
+	axs[1].set_ylabel('$J$ (evenness)', size=18)
+	axs[1].grid(color='#eaeaea', zorder=0, axis='y')
+
+	
+	for idx, row in persistent_h.iterrows():
+		axs[2].plot(row.dropna().index, row.dropna(), color='#333333', lw=0.5, zorder=3)
+		axs[2].scatter(row.dropna().index, row.dropna(), facecolor='#eaeaea', edgecolor='#333333', zorder=4)
+
+
+	axs[2].set_xlabel('days post symptom onset', size=18)
+	axs[2].set_ylabel('$H$ (diversity)', size=18)
+	axs[2].grid(color='#eaeaea', zorder=0, axis='y')
+	axs[2].set_xticks(list(j_dict.keys()))
+
+	for idx, row in persistent_j.iterrows():
+		axs[3].plot(row.dropna().index, row.dropna(), color='#333333', lw=0.5, zorder=3)
+		axs[3].scatter(row.dropna().index, row.dropna(), facecolor='#eaeaea', edgecolor='#333333', zorder=4)
+
+
+	axs[3].set_xlabel('days post symptom onset', size=18)
+	axs[3].set_ylabel('$J$ (evenness)', size=18)
+	axs[3].grid(color='#eaeaea', zorder=0, axis='y')
+	axs[3].set_xticks(list(j_dict.keys()))
+	x_pos = [-0.1, -0.15, -0.125, -0.125]
+	for ax_idx, ax in enumerate(axs):
+			ax.text(x_pos[ax_idx], 1.0, 
+				string.ascii_uppercase[ax_idx], color='#333333', 
+				transform=ax.transAxes, size=16, fontweight='bold')
+
+	fig.savefig('figures/final/figure_4.pdf')
+	plt.close()
 
 if __name__ == "__main__":
     run()
+
+

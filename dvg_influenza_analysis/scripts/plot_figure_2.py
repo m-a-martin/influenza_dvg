@@ -1,242 +1,325 @@
-import matplotlib.pyplot
 import argparse
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-import glob
+import matplotlib.patches as mpatches
 import string
-from scipy.stats import mannwhitneyu
-from mpl_toolkits.axes_grid1 import make_axes_locatable
+from scipy.stats import kruskal
+from scipy.stats import binomtest
+from scipy.stats.contingency import chi2_contingency
+import statsmodels.formula.api as smf
 try: 
-	from utils import plot_style, filter_dvg_dat, format_map_dict, jitter_boxplot
+	from utils import plot_style, jitter_boxplot
 except:
-	from scripts.utils import plot_style, filter_dvg_dat, format_map_dict, jitter_boxplot
-	
-
-def get_coding_region(f, map_dict):
-		gene_dat = pd.read_csv(f, sep='\t', comment='#', header=None)
-		# need to map all coordinates universal coordinate system
-		gene_dat[3] = gene_dat[3].map(map_dict[gene_dat.iloc[0,0]])
-		gene_dat[4] = gene_dat[4].map(map_dict[gene_dat.iloc[0,0]])
-		# subset to just genes
-		gene_dat = gene_dat[gene_dat[2] == 'gene']
-		gene_cords = np.unique(np.hstack([np.arange(i[3], i[4]+1) for i in gene_dat.values]))
-		return(gene_cords)
+	from scripts.utils import plot_style, jitter_boxplot
 
 
 def run():
 	parser = argparse.ArgumentParser()
 	# input files
-	parser.add_argument('--dat', default=None)
+	# NEE DTO ADD ALL RUNS AND LIB
 	parser.add_argument('--allRuns', default=None)
+	parser.add_argument('--dat', default=None)
 	parser.add_argument('--mapDir', default=None)
 	parser.add_argument('--padSize', default=None, type=int)
-	parser.add_argument('--repSpecid')
-	#parser.add_argument('--pb2Gene')
-	#parser.add_argument('--pb1Gene')
-	#parser.add_argument('--paGene')
+	parser.add_argument('--repEnrollID', default=None, type=int)
 	args = parser.parse_args()
-	#args.dat = 'output/parsed_dvgs_10_True_True_0_all.tsv'
-	# todo infer from file??
-	#args.padSize = 210
-	#args.repSpecid = 'HS1530'
-	#args.mapDir = "data/*_map.tsv"
+	#args.dat = 'output/parsed_dvgs_0.005_True_True_500_PB2_PB1_PA.tsv'
 	#args.allRuns = "data/all_runs.tsv"
-
-	segment_dat = \
-		[pd.read_csv(i, sep='\t', index_col=0) for i in glob.glob(args.mapDir)]
-	segment_len = {i.index.name: max(i.index)-(args.padSize*2) for i in segment_dat}
-	map_dict = format_map_dict(glob.glob(args.mapDir))
-	
-	segment_order = {'PB2': 0, 'PB1': 1, 'PA': 2, 'HA': 3, 
-		'NP': 4, 'NA': 5, 'M': 6, 'NS': 7}
-	dat = pd.read_csv(args.dat, sep='\t')
-	dat['segment'] = dat['segment'].fillna('NA')
-
+	#args.repEnrollID = '50319'
 	
 	# create an ordering of the specids, by sample date arbitrary
 	# first, subset run table to just samples we have
 	all_runs = pd.read_csv(args.allRuns, sep='\t')
-	all_runs['lib'] = all_runs['lib'].apply(lambda k: ''.join([i for i in k.split('_')[0] if not i.isdigit()]))
 	all_runs = all_runs[(all_runs['type'] == 'clinical')]
-	all_runs['Collection_date'] = pd.to_datetime(all_runs['Collection_date'])
-	all_runs = all_runs[['SPECID', 'Collection_date']].drop_duplicates().\
-		sort_values(by="Collection_date").reset_index(drop=True)
-	specid_sort_dict = {i['SPECID']: idx for idx, i in all_runs.iterrows()}
+
+	day_dict = {i['SPECID']:i['days_post_onset'] for 
+		idx,i in all_runs.iterrows()}
+
+	dat = pd.read_csv(args.dat, sep='\t')	
+
+	# map days post symptom onset onto dat
+	dat['days_post_onset'] = dat['Specid'].map(day_dict)
+
 	
-	# number of relative dvg reads per sample per segment
-	# need to reset index to account for samples with no dvg reads
-	sample_seg_rel_reads_df = \
-		dat.groupby(['segment', 'Specid'])['Rel_support'].sum().reindex(
-			pd.MultiIndex.from_product(
-			[segment_order.keys(), all_runs['SPECID'].unique()], names=['segment', 'Specid'])).fillna(
-		0.0).reset_index()
-	print(dat.groupby(['segment', 'Specid'])['Rel_support'].sum().shape)
-	print(sample_seg_rel_reads_df.shape)
-	sample_seg_rel_reads_df['x'] = \
-		sample_seg_rel_reads_df['segment'].map(segment_order)
-	sample_seg_rel_reads_df['y'] = \
-		sample_seg_rel_reads_df['Specid'].map(specid_sort_dict)
-	print(sample_seg_rel_reads_df)
-	dat_arr = np.zeros((sample_seg_rel_reads_df['y'].max()+1, sample_seg_rel_reads_df['x'].max()+1))
-	dat_arr[:] = np.nan
-	dat_arr[sample_seg_rel_reads_df['y'], sample_seg_rel_reads_df['x']] = \
-		np.log10(sample_seg_rel_reads_df['Rel_support'])
-	# unique dvgs per segment per sample
-	sample_seg_n_dvgs = dat.groupby(['segment', 'Specid']).size().reindex(
-		pd.MultiIndex.from_product(
-			[segment_order.keys(), all_runs['SPECID'].unique()], 
-			names=['segment', 'Specid'])).fillna(
-		0.0).reset_index()
-	sample_seg_n_dvgs_dict = {idx: i[0] for idx, i in 
-		sample_seg_n_dvgs[['segment', 0]].groupby('segment')}
-	# how many specids do we observe dvgs in?
 	output = []
-	output.append(f'DVGs observed in {(sample_seg_n_dvgs[["Specid", 0]].groupby("Specid").sum() > 0).sum().values[0]}')
-	output[-1] += f'/{sample_seg_n_dvgs["Specid"].unique().shape[0]} SPECIDS'
+	# groupby and sum supporting reads 
+	day_dvg_support = dat.groupby(['Specid', 'days_post_onset'])['Rel_support'].sum().reindex(
+		pd.MultiIndex.from_frame(all_runs[['SPECID', 'days_post_onset']].\
+			drop_duplicates())).fillna(0.0).reset_index()
+	day_dvg_support_dict = {int(g): g_dat['Rel_support'].values for g, g_dat in 
+		day_dvg_support.groupby(['days_post_onset'])}
 
-	# total relative reads per sample per segment
-	sample_seg_rel_reads_dict = {idx: 
-		i['Rel_support'].values for idx, i in sample_seg_rel_reads_df.groupby('segment')}
+	day_dvg_support_p = kruskal(*list(day_dvg_support_dict.values()))
+	output.append('total relative dvg read support by day post symptom onset (mean [sd]):')
+	for key, value in day_dvg_support_dict.items():
+		output.append(f'{key} days: {value.mean()} [{value.std()}]')
 
-	# todo move to function
-	# statistical test, DVG read support in PB2, PB1, PA, NS v. HA, NP, NA, M. 
+	output.append('Kruskal-Wallis H-test for independent samples')
+	output[-1] += ' of the total relative read support per sample'
+	output[-1] += ' grouped by the number of days post symptom onset'
+	output[-1] += f' p value = {day_dvg_support_p.pvalue}'
+	output.append('median [sd] number of total relative DVG reads per sample')
+	output[-1] += ' for samples taken 6 days post onset = '
+	output[-1] += f'{np.median(day_dvg_support_dict[6])} [{np.std(day_dvg_support_dict[6])}]'
+	output.append('median [sd] number of total relative DVG reads per sample')
+	output[-1] += ' for samples taken <6 days post onset = '
+	output[-1] += f'{np.median(np.hstack([day_dvg_support_dict[i] for i in day_dvg_support_dict.keys() if i < 6]))}'
+	output[-1] += f'[{np.std(np.hstack([day_dvg_support_dict[i] for i in day_dvg_support_dict.keys() if i < 6]))}]'
 
-	t = mannwhitneyu(sample_seg_rel_reads_df[
-			sample_seg_rel_reads_df['segment'].isin(['PB2', 'PB1', 'PA', 'NS'])]['Rel_support'],
-		sample_seg_rel_reads_df[
-			~sample_seg_rel_reads_df['segment'].isin(['PB2', 'PB1', 'PA', 'NS'])]['Rel_support'])
+	# groupby and count
+	day_dvg_count = dat.groupby(['Specid', 'days_post_onset']).size().reindex(
+		pd.MultiIndex.from_frame(all_runs[['SPECID', 'days_post_onset']].\
+			drop_duplicates())).fillna(0.0).reset_index()
 
-	output.append('mann whitney u test ')
-	output[-1] += 'comparing relative DVG read support on PB2, PB1, PA, NS v. HA, NP. NA, M'
-	output[-1] += f': statistic={t.statistic}; pvalue={t.pvalue}' 
+	day_dvg_count_dict = {int(g): g_dat[0].values for g, g_dat in 
+		day_dvg_count.groupby(['days_post_onset'])}
+
+	day_dvg_count_p = kruskal(*list(day_dvg_count_dict.values()))
+	output.append(' number of unique DVGs by day post symptom onset (mean [sd]):')
+	for key, value in day_dvg_count_dict.items():
+		output.append(f'{key} days: {value.mean()} [{value.std()}]')
+
+	output.append('Kruskal-Wallis H-test for independent samples')
+	output[-1] += ' of the number of unique DVGs per sample'
+	output[-1] += ' grouped by the number of days post symptom onset'
+	output[-1] += f' p value = {day_dvg_count_p.pvalue}'
+	output.append('median [sd] number of unique DVGs per sample')
+	output[-1] += ' for samples taken 6 days post onset = '
+	output[-1] += f'{np.median(day_dvg_count_dict[6])} [{np.std(day_dvg_count_dict[6])}]'
+	output.append('median [sd] number of unique DVGs per sample')
+	output[-1] += ' for samples taken <6 days post onset = '
+	output[-1] += f'{np.median(np.hstack([day_dvg_count_dict[i] for i in day_dvg_count_dict.keys() if i < 6]))}'
+	output[-1] += f'[{np.std(np.hstack([day_dvg_count_dict[i] for i in day_dvg_count_dict.keys() if i < 6]))}]'
+
+	# get longitudinal data
+	# only get rows from longitudinal data
+	uniq_enrollids = \
+		np.unique(dat[['Specid', 'enrollid']].drop_duplicates()['enrollid'].values, return_counts=True)
+	keep_enrollids = uniq_enrollids[0][uniq_enrollids[1] > 1]
+	# "HS" specids are household sampls
+	# and "MH" specids are clinic samples
+	# this can be verified in McCrone's data 
+	# e.g. https://github.com/lauringlab/Host_level_IAV_evolution/blob/master/data/processed/secondary/meta_one.sequence.success.csv
+	# therefore, when sampling date is the same, 
+	# based on McCrone methods, 
+	# household sample comes before clinic
+	dat = dat.merge(
+		dat[['enrollid', 'Specid', 'days_post_onset']].\
+			drop_duplicates().\
+			assign(clinic = lambda k: k.Specid.str[0:2] != 'HS').\
+			sort_values(by=['clinic', 'days_post_onset']).\
+			assign(within_host_order = lambda g: g.groupby('enrollid').cumcount()),
+		how='left', on=['enrollid', 'Specid', 'days_post_onset'])
+	# get just longitudinal data
+	long_dat = dat[dat['enrollid'].isin(keep_enrollids)]\
+		[['enrollid', 'Specid', 'days_post_onset', 'within_host_order', 'segment', 'Start', 'Stop', 
+			'Rel_support']].sort_values(by=['days_post_onset', 'within_host_order'])
+	n_long_dat = long_dat[['enrollid', 'Specid', 'days_post_onset']].groupby('enrollid').\
+		agg({'days_post_onset': [min, max]}).reset_index().reset_index()
+	output.append('number of longitudinal samples stratified by time between samples')
+	output.append(
+		str(n_long_dat.assign(tspan = lambda k: k.days_post_onset['max'] - k.days_post_onset['min']).groupby('tspan').size()))
+	# add tspan for each row
+	tspan = long_dat.groupby(['enrollid', 'days_post_onset'])['days_post_onset'].sum()
+	tspan_dict = {idx:i for idx, i in 
+		long_dat[['enrollid', 'within_host_order', 'days_post_onset']].drop_duplicates().pivot(
+			index=['enrollid'], columns='within_host_order', 
+			values='days_post_onset').apply(
+			lambda k: k[1] - k[0], axis=1).items()}
+	long_dat['tspan'] = long_dat['enrollid'].map(tspan_dict)
 	
-	# statistical test, unique DVG support in PB2, PB1, PA v. HA, NP, NA, M, NS
-	t2 = mannwhitneyu(sample_seg_n_dvgs[
-			sample_seg_n_dvgs['segment'].isin(['PB2', 'PB1', 'PA'])][0],
-		sample_seg_n_dvgs[
-			~sample_seg_n_dvgs['segment'].isin(['PB2', 'PB1', 'PA'])][0])
+	rep_dat = dat[dat['enrollid'] == int(args.repEnrollID)]
+	rep_dat['dvg'] = rep_dat['Segment'] + '_' + rep_dat['Start'].astype(str) + '_' + rep_dat['Stop'].astype(str)
+	rep_dat = rep_dat[['dvg', 'days_post_onset', 'Rel_support']]
+	rep_dat = pd.pivot(rep_dat, index='dvg', columns='days_post_onset', values='Rel_support').fillna(0)
+	rep_dat = rep_dat.sort_values(by=[0.0,1.0], ascending=False)
+	rep_kind = rep_dat[0.0] > 0
 
-	output.append('Mann-Whtiney U test ')
-	output[-1] += 'comparing number of unique DVGs per sample on PB2, PB1, PA v. HA, NP, NA, M, NS'
-	output[-1] += f': statistic={t2.statistic}; pvalue={t2.pvalue}' 
+	# pivot long dat
+	# we want a dataframe 
+	# that pivots DVGs based on their enrollid, subject, start, stop,
+	# then support t0 and support t1
+	grouped_dat = long_dat[['enrollid', 'within_host_order', 'tspan',
+		'segment', 'Start', 'Stop', 'Rel_support']].pivot(
+			index=['enrollid', 'tspan', 'segment', 'Start', 'Stop'], 
+			columns='within_host_order', 
+			values='Rel_support').fillna(0).reset_index()
+	# get just DVGs present in the first sample
+	grouped_t0_dat = grouped_dat[grouped_dat[0] > 0]
+	# indicator for whether that DVG is shared
+	grouped_t0_dat = grouped_t0_dat.\
+		assign(shared = lambda k: 1*(k[1] > 0))
+	# finally, just those that are seperated by 1 day
+	grouped_t0_dat_tspan1 = grouped_t0_dat.query('tspan == 1')
+	logit_in = grouped_t0_dat_tspan1.\
+		rename(
+			columns={
+				0: 'log10_rel_0_support',
+				1: 'log10_rel_1_support'}).\
+		assign(
+			log10_rel_0_support = lambda k: np.log10(k['log10_rel_0_support']),
+			log10_rel_1_support = lambda k: np.log10(k['log10_rel_1_support']))
+	t_fit = smf.logit("shared ~ log10_rel_0_support", 
+		data=logit_in).fit()
+	output.append(f'logistic regression p value using t_0 relative read support')
+	output[-1] += ' as a predictor for persistent/non-persistent DVGs'
+	output[-1] += ' for DVGs sampled 1 day appart'
+	output[-1] += f' {t_fit.pvalues["log10_rel_0_support"]}'
+	output.append(str(t_fit.summary()))
 	
 
-	with open('dvg_influenza_analysis/figures/final/figure_2.txt', 'w') as fp:
+
+	# group by individual then calculate proportion that are shared between time points
+	t_span_dict = {g: g_dat['shared'] for 
+		g, g_dat in grouped_t0_dat.reset_index().groupby('tspan')}
+	t_span = grouped_t0_dat.groupby('tspan')['shared'].apply(lambda x: 
+			pd.DataFrame([len(x)-sum(x), sum(x)])).reset_index().pivot(
+			index='tspan', columns='level_1', values=0)
+
+	t_span_p = chi2_contingency(t_span)[1]
+	output.append(f'chi2 test of independence p value comparing counts of persistent/non-persistent')
+	output[-1] += ' DVGs as a function of time between samples = '
+	output[-1] += f' {t_span_p}'
+	# now get proportion and confidence interval for each day
+	t_span_prop = t_span.apply(lambda k: 
+		(binomtest(k=k[1], n=k[1]+k[0],	 p=0.5).proportion_estimate, 
+			binomtest(k=k[1], n=k[1]+k[0], p=0.5).proportion_ci()), axis=1)
+
+	# want to fit model to this data
+	# x = intercept, probability of existing one generation, time points
+	def calc_sse(params, times, dat, model):
+		times = np.array(times)
+		predict_dat = np.apply_along_axis(model, 0, times, p=params)
+		delta = predict_dat - np.array(dat)
+		sse = (delta**2).sum()
+		return(sse)
+
+	persistent_model = lambda t, p: p[0]*((1-p[1])**(t*4))
+	from scipy.optimize import minimize
+	persistent_model_fit = minimize(calc_sse, (0.5, 0.5), 
+		(list(t_span_prop.index), [i[0] for i in t_span_prop.values], persistent_model))
+
+	output.append(f'model fit to the persistent of DVGs as a funciton of time between samples')
+	output.append(f'with the functional form r((1-p)^t) has paramters (r,p) of ')
+	output.append(f'{persistent_model_fit.x}')
+	# sort all DVGs by relative read support, get 99th percentile
+	rel_support_99th = np.log10(dat.sort_values(
+		by='Rel_support').iloc[
+			int(np.ceil(dat.shape[0]*0.99)),:]['Rel_support'])
+	# what is the predicted probability of this DVG perssiting?
+	prob_99th_persist = \
+		t_fit.predict(pd.DataFrame([rel_support_99th], columns=['log10_rel_0_support']))
+
+	output.append(f'the 99th percentile of observed relative read support is {rel_support_99th}')
+	output[-1] += f' and it would be predicted to have a {prob_99th_persist} probability of persisting'
+
+	prob_persist = \
+		t_fit.predict(pd.DataFrame([-2, 0], columns=['log10_rel_0_support']))
+	output.append('probability of persisting with log10 relative support of -2 and 0 is ')
+	output[-1] += f'{prob_persist}'
+	with open('figures/final/figure_2.txt', 'w') as fp:
 		for line in output:
-			fp.write(line + '\n')
-
-	
-	# finally, plot
-
+			fp.write(line+'\n')
 
 	plot_style()
-	fig = plt.figure(figsize=(6.4*3, 4.8*2.5), constrained_layout=True)
-	# heatmap
-	cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["white", "#333333"])
-	spec = fig.add_gridspec(ncols=10, nrows=10)
-	ax0 = fig.add_subplot(spec[:, :3])
-	im = ax0.imshow(dat_arr, aspect='auto', cmap=cmap)
-	cax = make_axes_locatable(ax0).append_axes('top', size='5%', pad=0.75)
-	cbar = fig.colorbar(im, cax=cax, orientation='horizontal')
-	cbar.ax.set_xlabel(r'log$_{10}$(rel. read support)')
-	ax0.set_xticks(list(segment_order.values()))
-	ax0.set_xticklabels(list(segment_order.keys()))
-	ax0.set_xlabel('segment', fontsize=20)
-	ax0.set_yticks([])
-	ax0.set_ylabel('sample', fontsize=20)
+
+	fig = plt.figure(figsize=(6.4*2.5, 4.8*2.5), constrained_layout=True)
+	spec = fig.add_gridspec(ncols=6, nrows=2)
+	axs = [fig.add_subplot(spec[0, :3]), fig.add_subplot(spec[0,3:]), 
+		fig.add_subplot(spec[1,:2]), fig.add_subplot(spec[1,2:4]), 
+		fig.add_subplot(spec[1,4:])]
+	axs[0] = jitter_boxplot(ax=axs[0], 
+		d=list(day_dvg_support_dict.values()),
+		i=list(day_dvg_support_dict.keys()),
+		j=0.5)
+	axs[0].grid(axis='y', color='#eaeaea', zorder=1)
+	axs[0].set_xlabel('days post symptom onset\n', size=mpl.rcParams['axes.titlesize'])
+	axs[0].set_ylabel('total rel. DVG reads per sample', size=mpl.rcParams['axes.titlesize'])
+	axs[1] = jitter_boxplot(ax=axs[1], 
+		d=list(day_dvg_count_dict.values()),
+		i=list(day_dvg_count_dict.keys()),
+		j=0.5)
+	axs[1].grid(axis='y', color='#eaeaea', zorder=1)
+	axs[1].set_xlabel('days post symptom onset\n', size=mpl.rcParams['axes.titlesize'])
+	axs[1].set_ylabel('unique DVG species per sample', size=mpl.rcParams['axes.titlesize'])
+		
+	colors = plt.cm.tab20b(np.linspace(0, 1, rep_dat.T.values.shape[1]))
+	np.random.seed(3)
+	#3
+	np.random.shuffle(colors)
+	cols = {True: 'steelblue', False: '#eaeaea'}
+	axs[2] = rep_dat.T.plot(ax=axs[2], kind='bar', stacked=True, color=rep_kind.map(cols),
+		edgecolor='#333333', zorder=3)
+	axs[2] = rep_dat.T.rename(index={0:0.25, 1:0.75},inplace=False).plot(ax=axs[2], kind='line', 
+		stacked=True, color='#8c8c8c', ls='--', lw=0.5, zorder=4)
+	
+	#axs[2].get_legend().remove()
+	p = [mpatches.Patch(facecolor='steelblue', 
+			edgecolor='#333333', label=r'$t_0$ DVGs'),
+		mpatches.Patch(facecolor='#eaeaea', 
+			edgecolor='#333333', label=r'$t_1$ DVGs')]
+	axs[2].legend(handles=p, loc='upper left')
+	axs[2].set_xticklabels([str(int(i)) for i in rep_dat.T. index])
+	axs[2].set_xlabel('days post symptom onset', size=18)
+	axs[2].set_ylabel('relative read support', size=18)
+	axs[2].set_title(args.repEnrollID)
+	axs[2].grid(color='#eaeaea', zorder=0, axis='y')
+
+	grouped_t0_dat_tspan1_dict = \
+		{1*g: g_dat[0] for g, g_dat in grouped_t0_dat_tspan1.groupby('shared')}
+	x = pd.concat([i.apply(np.log10) for i in grouped_t0_dat_tspan1_dict.values()]).values
+	y = np.hstack([np.repeat(0, list(grouped_t0_dat_tspan1_dict.values())[0].shape[0]),
+		np.repeat(1, list(grouped_t0_dat_tspan1_dict.values())[1].shape[0])])
+	rng = np.random.default_rng(seed=111)
+	y = y + rng.uniform(low = -0.25/2, high=0.25/2, size=x.shape[0])
+	axs[3].scatter(x,y,edgecolor='#333333', facecolor="None", marker='o', zorder=4, alpha=0.5)
+	#axs[4].set_xscale('log')
+	x_vals = pd.concat([logit_in.log10_rel_0_support, logit_in.log10_rel_1_support]).\
+		reset_index().\
+		rename(columns={
+					0: 'x'}).\
+		query('x > -inf').x
+	x_vals = np.linspace(x_vals.min(), x_vals.max() , 1000)
+	pred_y = t_fit.predict(pd.DataFrame(
+		x_vals, 
+		columns=['log10_rel_0_support']))
+	axs[3].plot(x_vals, pred_y, color='#333333')
+	secax = axs[3].secondary_yaxis('right')
+	secax.set_ylabel(r'$P($'+'persistent'+r'$)$', size=mpl.rcParams['axes.titlesize'])
+	secax.set_yticks([0, 0.25, 0.5, 0.75, 1])
+	axs[3].set_yticks([0,1])
+	axs[3].set_yticklabels(['non persistent', 'persistent'])
+	axs[3].grid(color='#eaeaea')
+	axs[3].set_xlabel(r'$log_{10}$(relative read support)', size=mpl.rcParams['axes.titlesize'])
+	for idx, i in t_span_prop.items():
+		_ = axs[4].scatter([idx], i[0], facecolor='#eaeaea', edgecolor='#333333', zorder=5)
+		_ = axs[4].plot([idx, idx], i[1], color='#333333', zorder=4)
+		_ = axs[4].plot([idx-0.1, idx+0.1], [i[1][1], i[1][1]], color='#333333', zorder=4)
+		_ = axs[4].plot([idx-0.1, idx+0.1], [i[1][0], i[1][0]], color='#333333', zorder=4)
+
+	x_vals = np.linspace(t_span_prop.index.min(), t_span_prop.index.max())
+	y_vals = np.apply_along_axis(persistent_model, 0, x_vals, persistent_model_fit.x)
+	axs[4].plot(x_vals, y_vals, ls='--', color='#4d4d4d')
+	axs[4].grid(axis='y', color='#eaeaea', zorder=1)
+	axs[4].set_xlabel('days between samples', size=mpl.rcParams['axes.titlesize'])
+	axs[4].set_ylabel('proportion of persistent $t_0$ DVGs', size=mpl.rcParams['axes.titlesize'])
+	axs[4].set_xticks([int(i) for i in t_span_prop.index])
 	
 
-	# unique DVGs per sample per segment
-	ax2 = fig.add_subplot(spec[:5, 4:7])
-	ax2 = jitter_boxplot(ax=ax2, 
-		i=[segment_order[i] for i in sample_seg_rel_reads_dict.keys()],
-		d=sample_seg_rel_reads_dict.values())
-	ax2.set_yscale('log')
-	ax2.set_xticks(list(segment_order.values()))
-	ax2.set_xticklabels(segment_order.keys())
-	ax2.set_xlabel('segment', size=mpl.rcParams['axes.titlesize'])
-	ax2.set_ylabel('total rel. DVG reads per sample', size=mpl.rcParams['axes.titlesize'])
-	ax2.grid(axis='y', color='#eaeaea')
-
-	# total relative dvg read support per sample per segment
-	# unique DVGs per sample per segment
-	print()
-	ax3 = fig.add_subplot(spec[:5, 7:10])
-	ax3 = jitter_boxplot(ax=ax3, 
-		i=[segment_order[i] for i in sample_seg_n_dvgs_dict.keys()],
-		d=sample_seg_n_dvgs_dict.values())
-	ax3.set_xticks(list(segment_order.values()))
-	ax3.set_xticklabels(segment_order.keys())
-	ax3.set_yscale('log')
-	ax3.set_xlabel('segment', size=mpl.rcParams['axes.titlesize'])
-	ax3.set_ylabel('unique DVGs per sample', size=mpl.rcParams['axes.titlesize'])
-	ax3.grid(axis='y', color='#eaeaea')
-
-
-	
-	# representative junction
-
-
-	# pb2
-	# need to read in and parse gff3
-	ax4 = fig.add_subplot(spec[5:, 4:6])
-	for idx, row in dat[(dat['Specid'] == args.repSpecid) & (dat['segment'] == 'PB2')].iterrows():
-		_ = ax4.plot([row['mapped_start'] - args.padSize, row['mapped_stop'] - args.padSize], 
-			[1,0], color='#333333', lw=0.5)
-
-	
-	_ = [ax4.spines[i].set_visible(False) for i in ['left', 'right']]
-	ax4.set_ylim(-0.025, None)
-	ax4.set_xlabel('position (nt)', size=mpl.rcParams['axes.titlesize'])
-	ax4.set_xlim(0, segment_len['PB2'])
-	ax4.set_title('PB2')
-	ax4.set_yticks([])
-
-
-	# pb1
-	ax5 = fig.add_subplot(spec[5:, 6:8])
-	for idx, row in dat[(dat['Specid'] == args.repSpecid) & (dat['segment'] == 'PB1')].iterrows():
-		_ = ax5.plot([row['mapped_start'] - args.padSize, row['mapped_stop'] - args.padSize], 
-			[1,0], color='#333333', lw=0.5)
-
-	_ = [ax5.spines[i].set_visible(False) for i in ['left', 'right']]
-	ax5.set_xlabel('position (nt)')
-	ax5.set_xlim(0, segment_len['PB1'])
-	ax5.set_title(f'{args.repSpecid}\nPB1')
-	ax5.set_yticks([])
-	# pa
-	ax6 = fig.add_subplot(spec[5:, 8:10])
-	for idx, row in dat[(dat['Specid'] == args.repSpecid) & (dat['segment'] == 'PA')].iterrows():
-		_ = ax6.plot([row['mapped_start'] - args.padSize, row['mapped_stop'] - args.padSize], 
-			[1,0], color='#333333', lw=0.5)
-
-	_ = [ax6.spines[i].set_visible(False) for i in ['left', 'right']]
-	ax6.set_xlabel('position (nt)', size=mpl.rcParams['axes.titlesize'])
-	ax6.set_xlim(0, segment_len['PA'])
-	ax6.set_title(f'PA')
-	ax6.set_yticks([])
-
-	x_locs = [-0.075, -0.15, -0.175, -0.125, -0.125, -0.125]
-	y_locs = [1.0, 1.0, 1.0, 1.05, 1.05, 1.05]
-	for ax_idx, ax in enumerate([cbar.ax, ax2, ax3, ax4, ax5, ax6]):
-			ax.text(x_locs[ax_idx], y_locs[ax_idx], 
+	x_vals=[-0.125, -0.125, -0.25, -0.475, -0.2]
+	for ax_idx, ax in enumerate(axs):
+			ax.text(x_vals[ax_idx], 1.0, 
 				string.ascii_uppercase[ax_idx], color='#333333', 
-				transform=ax.transAxes, size=18, fontweight='bold')
+				transform=ax.transAxes, size=16, fontweight='bold')
 
-	fig.savefig('dvg_influenza_analysis/figures/final/figure_2.pdf')
+	fig.savefig('figures/final/figure_2.pdf')
 	plt.close()
 
 
 
 if __name__ == "__main__":
     run()
-
-
-
-
-
-
 
 

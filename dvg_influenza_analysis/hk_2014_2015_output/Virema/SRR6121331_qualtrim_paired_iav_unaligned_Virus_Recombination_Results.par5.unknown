@@ -1,0 +1,6 @@
+Segment	Start	Stop	Forward_support	Reverse_support	Total_support	Fuzz_factor
+CY207731.1	1241	529	0	8	8	529
+CY207731.1	1619	1209	1	6	7	1619
+CY207733.1	1444	273	0	6	6	273
+CY207733.1	1553	248	19	0	19	1553
+CY207736.1	727	433	10	1	11	727

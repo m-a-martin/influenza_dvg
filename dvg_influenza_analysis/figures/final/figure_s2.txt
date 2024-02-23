@@ -1,0 +1,208 @@
+PB2
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:            Rel_support   R-squared:                       0.015
+Model:                            OLS   Adj. R-squared:                  0.011
+Method:                 Least Squares   F-statistic:                     3.303
+Date:                Sun, 18 Feb 2024   Prob (F-statistic):             0.0705
+Time:                        11:11:56   Log-Likelihood:                -408.07
+No. Observations:                 217   AIC:                             820.1
+Df Residuals:                     215   BIC:                             826.9
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+========================================================================================
+                           coef    std err          t      P>|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------
+Intercept                1.7314      0.489      3.539      0.000       0.767       2.696
+log10_genomes_per_ul    -0.1880      0.103     -1.817      0.071      -0.392       0.016
+==============================================================================
+Omnibus:                      217.934   Durbin-Watson:                   1.920
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             4346.726
+Skew:                           4.122   Prob(JB):                         0.00
+Kurtosis:                      23.317   Cond. No.                         22.3
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+PB1
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:            Rel_support   R-squared:                       0.005
+Model:                            OLS   Adj. R-squared:                  0.001
+Method:                 Least Squares   F-statistic:                     1.187
+Date:                Sun, 18 Feb 2024   Prob (F-statistic):              0.277
+Time:                        11:11:56   Log-Likelihood:                -264.46
+No. Observations:                 217   AIC:                             532.9
+Df Residuals:                     215   BIC:                             539.7
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+========================================================================================
+                           coef    std err          t      P>|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------
+Intercept                0.6821      0.252      2.703      0.007       0.185       1.180
+log10_genomes_per_ul    -0.0582      0.053     -1.089      0.277      -0.163       0.047
+==============================================================================
+Omnibus:                      228.310   Durbin-Watson:                   1.737
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             6189.290
+Skew:                           4.273   Prob(JB):                         0.00
+Kurtosis:                      27.728   Cond. No.                         22.3
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+PA
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:            Rel_support   R-squared:                       0.005
+Model:                            OLS   Adj. R-squared:                 -0.000
+Method:                 Least Squares   F-statistic:                    0.9802
+Date:                Sun, 18 Feb 2024   Prob (F-statistic):              0.323
+Time:                        11:11:56   Log-Likelihood:                -531.95
+No. Observations:                 217   AIC:                             1068.
+Df Residuals:                     215   BIC:                             1075.
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+========================================================================================
+                           coef    std err          t      P>|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------
+Intercept                2.3408      0.866      2.703      0.007       0.634       4.047
+log10_genomes_per_ul    -0.1813      0.183     -0.990      0.323      -0.542       0.180
+==============================================================================
+Omnibus:                      245.833   Durbin-Watson:                   1.995
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             8633.112
+Skew:                           4.698   Prob(JB):                         0.00
+Kurtosis:                      32.437   Cond. No.                         22.3
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+HA
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:            Rel_support   R-squared:                       0.005
+Model:                            OLS   Adj. R-squared:                  0.000
+Method:                 Least Squares   F-statistic:                     1.082
+Date:                Sun, 18 Feb 2024   Prob (F-statistic):              0.299
+Time:                        11:11:56   Log-Likelihood:                 74.742
+No. Observations:                 217   AIC:                            -145.5
+Df Residuals:                     215   BIC:                            -138.7
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+========================================================================================
+                           coef    std err          t      P>|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------
+Intercept                0.1266      0.053      2.394      0.018       0.022       0.231
+log10_genomes_per_ul    -0.0116      0.011     -1.040      0.299      -0.034       0.010
+==============================================================================
+Omnibus:                      396.164   Durbin-Watson:                   2.035
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):           128470.240
+Skew:                           9.777   Prob(JB):                         0.00
+Kurtosis:                     120.585   Cond. No.                         22.3
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+NP
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:            Rel_support   R-squared:                       0.100
+Model:                            OLS   Adj. R-squared:                  0.096
+Method:                 Least Squares   F-statistic:                     23.98
+Date:                Sun, 18 Feb 2024   Prob (F-statistic):           1.91e-06
+Time:                        11:11:56   Log-Likelihood:                 344.85
+No. Observations:                 217   AIC:                            -685.7
+Df Residuals:                     215   BIC:                            -678.9
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+========================================================================================
+                           coef    std err          t      P>|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------
+Intercept                0.1097      0.015      7.202      0.000       0.080       0.140
+log10_genomes_per_ul    -0.0158      0.003     -4.897      0.000      -0.022      -0.009
+==============================================================================
+Omnibus:                      194.934   Durbin-Watson:                   1.937
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             3544.008
+Skew:                           3.488   Prob(JB):                         0.00
+Kurtosis:                      21.528   Cond. No.                         22.3
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+NA
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:            Rel_support   R-squared:                       0.009
+Model:                            OLS   Adj. R-squared:                  0.005
+Method:                 Least Squares   F-statistic:                     2.034
+Date:                Sun, 18 Feb 2024   Prob (F-statistic):              0.155
+Time:                        11:11:56   Log-Likelihood:                -1.0017
+No. Observations:                 217   AIC:                             6.003
+Df Residuals:                     215   BIC:                             12.76
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+========================================================================================
+                           coef    std err          t      P>|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------
+Intercept                0.2180      0.075      2.909      0.004       0.070       0.366
+log10_genomes_per_ul    -0.0226      0.016     -1.426      0.155      -0.054       0.009
+==============================================================================
+Omnibus:                      233.253   Durbin-Watson:                   2.098
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             5694.977
+Skew:                           4.493   Prob(JB):                         0.00
+Kurtosis:                      26.433   Cond. No.                         22.3
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+M
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:            Rel_support   R-squared:                       0.096
+Model:                            OLS   Adj. R-squared:                  0.092
+Method:                 Least Squares   F-statistic:                     22.93
+Date:                Sun, 18 Feb 2024   Prob (F-statistic):           3.12e-06
+Time:                        11:11:56   Log-Likelihood:                 143.68
+No. Observations:                 217   AIC:                            -283.4
+Df Residuals:                     215   BIC:                            -276.6
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+========================================================================================
+                           coef    std err          t      P>|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------
+Intercept                0.3090      0.038      8.029      0.000       0.233       0.385
+log10_genomes_per_ul    -0.0390      0.008     -4.789      0.000      -0.055      -0.023
+==============================================================================
+Omnibus:                      137.692   Durbin-Watson:                   1.509
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              950.047
+Skew:                           2.486   Prob(JB):                    5.01e-207
+Kurtosis:                      11.964   Cond. No.                         22.3
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+NS
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:            Rel_support   R-squared:                       0.021
+Model:                            OLS   Adj. R-squared:                  0.017
+Method:                 Least Squares   F-statistic:                     4.625
+Date:                Sun, 18 Feb 2024   Prob (F-statistic):             0.0326
+Time:                        11:11:56   Log-Likelihood:                -61.632
+No. Observations:                 217   AIC:                             127.3
+Df Residuals:                     215   BIC:                             134.0
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+========================================================================================
+                           coef    std err          t      P>|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------
+Intercept                0.4658      0.099      4.699      0.000       0.270       0.661
+log10_genomes_per_ul    -0.0451      0.021     -2.151      0.033      -0.086      -0.004
+==============================================================================
+Omnibus:                      139.075   Durbin-Watson:                   1.902
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              880.063
+Skew:                           2.568   Prob(JB):                    7.88e-192
+Kurtosis:                      11.423   Cond. No.                         22.3
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
