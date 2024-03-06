@@ -21,6 +21,8 @@ params.fastqcPath = "${params.outputDir}/fastqc"
 params.alignPath = "${params.outputDir}/bowtie2"
 params.viremaPath = "${params.outputDir}/Virema"
 params.depthPath = "${params.outputDir}/depth"
+params.varPath = "${params.outputDir}/var"
+params.conPath = "${params.outputDir}/consensus"
 
 /*
 * Step 1. Trimming
@@ -37,16 +39,16 @@ process trimmomatic {
     set val(id), file(read1), file(read2) from reads
 
     output:
-    set val(id), "${read1.baseName}.qualtrim.paired.fastq.gz", "${read2.baseName}.qualtrim.paired.fastq.gz" into kraken2Channel
-    set val(id), "${read1.baseName}.qualtrim.paired.fastq.gz", "${read2.baseName}.qualtrim.paired.fastq.gz" into extractChannel
-    file "*.qualtrim.unpaired.fastq.gz"
+    set val(id), "${read1.baseName}_qualtrim_paired.fastq.gz", "${read2.baseName}_qualtrim_paired.fastq.gz" into kraken2Channel
+    set val(id), "${read1.baseName}_qualtrim_paired.fastq.gz", "${read2.baseName}_qualtrim_paired.fastq.gz" into extractChannel
+    file "*_qualtrim_unpaired.fastq.gz"
     stdout trim_out
 
     """
     trimmomatic PE \
     -threads $params.trimCPU -phred33 $read1 $read2 \
-    ${read1.baseName}.qualtrim.paired.fastq.gz ${read1.baseName}.qualtrim.unpaired.fastq.gz \
-    ${read2.baseName}.qualtrim.paired.fastq.gz ${read2.baseName}.qualtrim.unpaired.fastq.gz \
+    ${read1.baseName}_qualtrim_paired.fastq.gz ${read1.baseName}_qualtrim_unpaired.fastq.gz \
+    ${read2.baseName}_qualtrim_paired.fastq.gz ${read2.baseName}_qualtrim_unpaired.fastq.gz \
     $params.trimOptions
     """
 }
@@ -67,8 +69,8 @@ process kraken2 {
     output:
     file "*_report.txt"
     file "*_kraken.txt"
-    set val(id), "${read1.baseName}.iav.fastq.gz", "${read2.baseName}.iav.fastq.gz" into fastqcChannel
-    set val(id), "${read1.baseName}.iav.fastq.gz", "${read2.baseName}.iav.fastq.gz" into catChannel
+    set val(id), "${read1.simpleName}_iav.fastq.gz", "${read2.simpleName}_iav.fastq.gz" into fastqcChannel
+    set val(id), "${read1.simpleName}_iav.fastq.gz", "${read2.simpleName}_iav.fastq.gz" into catChannel
 
     """
     kraken2 \
@@ -78,22 +80,22 @@ process kraken2 {
 	--paired \
 	$read1 \
 	$read2 \
-	> ${read1.baseName}_kraken.txt
+	> ${read1.simpleName}_kraken.txt
     
     python3 ${params.kraken2ScriptPath}/extract_kraken_reads.py \
-	-k ${read1.baseName}_kraken.txt \
+	-k ${read1.simpleName}_kraken.txt \
 	-s1 $read1 \
 	-s2 $read2 \
-	-o ${read1.baseName}.iav.fastq \
-	-o2 ${read2.baseName}.iav.fastq \
+	-o ${read1.simpleName}_iav.fastq \
+	-o2 ${read2.simpleName}_iav.fastq \
 	--fastq-output \
 	--include-children \
 	-t 11320 \
 	-r ${read1.baseName}_report.txt \
 	--max 1000000000 
 
-    gzip ${read1.baseName}.iav.fastq
-    gzip ${read2.baseName}.iav.fastq
+    gzip ${read1.simpleName}_iav.fastq
+    gzip ${read2.simpleName}_iav.fastq
     """
 
 }
@@ -129,10 +131,10 @@ process combineFASTQ {
     set pair_id, file(read1), file(read2) from catChannel
 
     output:
-    file  "*both.fq.gz" into bowtie2Channel
+    file  "*_qualtrim_paired_iav.fastq.gz" into bowtie2Channel
 
     """
-    cat $read1 $read2 > ${pair_id}both.fq.gz
+    cat $read1 $read2 > ${pair_id}_qualtrim_paired_iav.fastq.gz
     """
 }
 
@@ -147,18 +149,26 @@ process runbowtie2 {
     input:
     file in_cat from bowtie2Channel
 
-    output:
-    file "*_unaligned.fq" into viremaChannel
-    file "*.bam" into depthChannel
+    output: 
+    file "*_unaligned.fastq" into viremaChannel
+    file "*.bam" into depthChannel, vcfChannel
 
     """
-    bowtie2 -p $params.bowtie2CPU -x $params.bowtie2_pad_index -U $in_cat --score-min $params.scoreMin \
-    --un ${in_cat.baseName}_unaligned.fq | samtools view -bS - > ${in_cat.baseName}.bam
+    bowtie2 \
+            -p $params.bowtie2CPU \
+            -x $params.bowtie2_index \
+            -U $in_cat \
+            --score-min $params.scoreMin \
+            --un ${in_cat.simpleName}_unaligned.fastq | \
+        samtools sort -n -@ $params.bowtie2CPU -O sam - |  \
+        samtools fixmate -@ $params.bowtie2CPU -O sam -m - - | \
+        samtools sort -@ $params.bowtie2CPU -O sam | \
+        samtools markdup -@ $params.bowtie2CPU -r -s -O bam - ${in_cat.simpleName}.bam
     """
 }
 
 /*
-Step 5. Remove duplicates, count depth
+Step 6. Count depth
 */
 process depth {
     cpus params.bowtie2CPU
@@ -173,13 +183,74 @@ process depth {
 
 
     """
-    samtools sort -n -@ $params.bowtie2CPU -O sam ${in_bam} |  \
-        samtools fixmate -@ $params.bowtie2CPU -O sam -m - - | \
-        samtools sort -@ $params.bowtie2CPU -O sam | \
-        samtools markdup -@ $params.bowtie2CPU -r -s -O sam - - | \
-        samtools depth -aa  - > ${in_bam.baseName}_dp.tsv
+    samtools depth -aa  ${in_bam} > ${in_bam.simpleName}_dp.tsv
     """
 }
+
+
+/*
+Step 7. Call variants
+*/
+process vcf {
+    cpus params.bowtie2CPU
+    memory "$params.bowtie2Mem GB"
+    publishDir params.varPath, mode: 'copy'
+
+    input:
+    file in_bam from vcfChannel    
+
+    output:
+    file "${in_bam.simpleName}.vcf.gz" into vcfgzChannel
+    file "${in_bam.simpleName}.vcf.gz.tbi" into tbiChannel
+    file "*.vcf"
+
+    """
+    bcftools mpileup \
+            --threads $params.bowtie2CPU \
+            -A \
+            -d 1000 \
+            -q 20 \
+            -Q 20 \
+            -I \
+            -f ${params.bowtie2_index}.fasta ${in_bam} |\
+        bcftools call \
+            -mv \
+            --threads $params.bowtie2CPU \
+            -Ov | \
+        bcftools norm \
+            -m- \
+            -Ov \
+            -o ${in_bam.simpleName}.vcf
+    
+    bgzip -c ${in_bam.simpleName}.vcf > ${in_bam.simpleName}.vcf.gz
+    tabix ${in_bam.simpleName}.vcf.gz
+    """
+}
+
+/*
+Step 8. Individual level consensus
+*/
+process consensus {
+    cpus params.bowtie2CPU
+    memory "$params.bowtie2Mem GB"
+    publishDir params.conPath, mode: 'copy'
+
+    input:
+    file vcf_gz from vcfgzChannel
+    file vcf_gz_tbi from tbiChannel
+
+    output:
+    file "*.ebwt" into viremaIndexChannel
+    file "*.fasta"
+
+    """
+    bash $params.conApp ${params.bowtie2_index}.fasta  $vcf_gz > ${vcf_gz.simpleName}.fasta
+
+    # need to index sample-wise reference
+    bowtie-build ${vcf_gz.simpleName}.fasta ${vcf_gz.simpleName}
+    """
+}
+
 
 /*
 * Step 5. ViReMa
@@ -187,25 +258,57 @@ process depth {
 process runVirema {
     cpus params.viremaCPU
     memory "$params.viremaMem GB"
-    publishDir params.viremaPath, mode: 'copy'
+    publishDir params.viremaPath
 
     input:
     file unalign from viremaChannel
+    file index from viremaIndexChannel
 
     output:
     file "*.results"
     file "*Virus_Recombination_Results.txt" into viremaSum
     file "*tions.txt"
     file "*unaligned*.txt"
-    file "*_rename.fq"
+    file "*_rename.fastq"
     file "*_Virema_log.out" 
+    file "DeDuped*.results" into resultsBam
 
     """
-    awk '{print (NR%4 == 1) ? "@1_" ++i : \$0}' $unalign >  ${unalign.baseName}_rename.fq
+    awk '{print (NR%4 == 1) ? "@1_" ++i : \$0}' $unalign >  ${unalign.simpleName}_rename.fastq
     
-    python ${params.viremaApp}/ViReMa.py $params.virema_index ${unalign.baseName}_rename.fq ${unalign.baseName}.results \
-    --MicroInDel_Length $params.micro -DeDup --Defuzz 3 --Seed ${params.seed} \
-    --N ${params.mismatch} --X ${params.X} --Output_Tag $unalign.baseName -ReadNamesEntry --p $params.viremaCPU > ${unalign.baseName}_Virema_log.out
+    python ${params.viremaApp}/ViReMa.py \
+        ${index[1].simpleName} \
+        ${unalign.simpleName}_rename.fastq     \
+        ${unalign.simpleName}.results \
+        --MicroInDel_Length $params.micro \
+        -DeDup \
+        --Defuzz 3 \
+        --Seed ${params.seed} \
+        --N ${params.mismatch} \
+        --X ${params.X} \
+        --Output_Tag ${unalign.simpleName} \
+        -ReadNamesEntry \
+        --p $params.viremaCPU \
+        > ${unalign.simpleName}_Virema_log.out
+    """
+}
+
+
+/*
+* Step 6. Compress ViReMa reads
+*/
+process runSummary {
+    memory "2 GB"
+    publishDir params.viremaPath
+
+    input:
+    file in_file from resultsBam
+
+    output:
+    file "*.bam"
+
+    """
+    samtools view -bS ${in_file} > ${in_file.baseName}.bam
     """
 }
 
