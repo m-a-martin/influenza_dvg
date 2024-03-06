@@ -1,12 +1,14 @@
 # Influenza-virus-DI-identification-pipeline
 
 # DESCRIPTION
+
 Adapted from: [https://github.com/BROOKELAB/Influenza-virus-DI-identification-pipeline](https://github.com/BROOKELAB/Influenza-virus-DI-identification-pipeline).
 
 This is an Illumina-based sequencing framework and bioinformatics pipeline capable of generating highly accurate and reproducible profiles of DIP-associated junction sequences originally published [here](https://doi.org/10.1128/jvi.00354-19) and adopted by Michael A. Martin, Nick Berg, and Katia Koelle. Included configuration files are for analysis of the influenza A H3N2 data published by McCrone et al. [here](https://doi.org/10.7554/eLife.35962). The pipeline is linux-based.
 
 
 # DEPENDENCIES
+
 This pipeline expects the following tools/languages to be installed as *linux modules* (http://modules.sourceforge.net/) and be available in your path:
 
 - <b>Nextflow</b>    tested with v19.01.0.5050 ( download page https://github.com/nextflow-io/nextflow/releases )
@@ -20,6 +22,7 @@ This pipeline expects the following tools/languages to be installed as *linux mo
 - <b>Perl</b>        tested with version v5.26.2  ( download page https://www.perl.org/ )
 
 # WORKFLOW OF THE PIPELINE
+
 In short, starting from a set of illumina paired sequencing reads the pipeline performs the following steps: 
 1. Trim reads using Trimmomatic
 2. Identify only influenza A reads using Kraken2 and the k2_pluspf_16gb database
@@ -58,6 +61,7 @@ The actual results of the pipeline are placed in these folders:
 - <b>Virema</b>		 contains the results of running ViReMa on the unaligned reads to detect DIP-associated deletion junctions. Each sample will have several files with intermediary and final results. The final results are the files ending in <i> *.par </i>*.
 
 # LICENSE
+
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
