@@ -1,108 +1,167 @@
-import matplotlib.pyplot
-import argparse
 import pandas as pd
+import argparse
+import glob
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.stats import mannwhitneyu
 import string
+from scipy.stats import kruskal
+import statsmodels.formula.api as smf
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 try: 
-	from utils import plot_style
+	from utils import plot_style, jitter_boxplot
 except:
-	from scripts.utils import plot_style
-	
+	from scripts.utils import plot_style, jitter_boxplot
+
 
 def run():
 	parser = argparse.ArgumentParser()
 	# input files
+	# NEE DTO ADD ALL RUNS AND LIB
 	parser.add_argument('--dat', default=None)
+	parser.add_argument('--allRuns', default=None)
+	parser.add_argument('--mapDir', default=None)
+	parser.add_argument('--padSize', default=None, type=int)
 	args = parser.parse_args()
-	#args.allRuns =  "data/all_runs.tsv"
-	#args.dat = 'output/parsed_dvgs_0.004_True_True_500_PB2_PB1_PA.tsv'
+	#args.dat = 'output/parsed_dvgs_0.005_True_True_500_PB2_PB1_PA.tsv'
 	#args.mapDir = "data/*_map.tsv"
-	#args.fastaDir = "*_output/consensus/*.fasta"
-	#args.nullPremature = "output/null_premature_stop.tsv"
 	#args.padSize = 210
+	#args.allRuns = "data/all_runs.tsv"
+	all_runs = pd.read_csv(args.allRuns, sep='\t')
+	# these maps include the padding
+	segment_len = {
+		pd.read_csv(i, sep='\t', index_col=0).index.name:
+		pd.read_csv(i, sep='\t', index_col=0).index.max()-2*args.padSize for 
+			i in glob.glob(args.mapDir)}
+
+	# add days post symptom onset
+	day_dict = {i['SPECID']:i['days_post_onset'] for 
+			idx,i in all_runs.iterrows()}
+
 	dat = pd.read_csv(args.dat, sep='\t')	
+	bins = [750,1250]
+	bin_labels = [f'[0,{bins[0]})',
+		f'[{bins[0]},{bins[1]})',
+		f'[{bins[1]},)']
+	dat = dat.\
+		assign(
+			days_post_onset = lambda k: k['Specid'].map(day_dict),
+			seg_len = lambda k: k['segment'].map(segment_len),
+			dvg_len = lambda k: k['seg_len'] - (k.mapped_stop - k.mapped_start - 1),
+			log10_rel_support = lambda k: np.log10(k.Rel_support),
+			dvg_len_bin = lambda k: np.digitize(k.dvg_len, bins=bins))
+	
+	long_dat = dat.\
+		merge(
+			dat[['enrollid', 'Specid']].\
+				drop_duplicates().\
+				groupby('enrollid').\
+				size().reset_index().\
+				rename(columns={0:'size'}).\
+				query('size > 1'),
+			on='enrollid',
+			how = 'inner').\
+		assign(
+			t0 = lambda k: 
+					k.groupby('enrollid').days_post_onset.transform(lambda g: min(g)),
+			t1 = lambda k: 
+					k.groupby('enrollid').days_post_onset.transform(lambda g: max(g)),
+			clinic = lambda k: k.Specid.str[0:2] != 'HS',
+			within_host_order = lambda k:
+				1*((k.days_post_onset == k.t1) & ((k.days_post_onset != k.t0) | (k.clinic == True)))).\
+		pivot(index=['enrollid', 'segment', 'seg_len', 'dvg_len', 'dvg_len_bin', 'mapped_start', 'mapped_stop', 't0', 't1'], 
+			columns='within_host_order', values='Rel_support').reset_index().\
+		fillna(0).\
+		assign(
+			tspan = lambda k: k.t1 - k.t0,
+			init = lambda k: k[0] > 0,
+			persistent = lambda k: (k[0] > 0) & (k[1] > 0))
 
-	rng = np.random.default_rng(seed=111)
-	# plot modulus
-	dat = dat.assign(dvg_len_mod = lambda k: (k.Stop - k.Start - 1)%3)
-	q_dat = {}
-	# resample and calculate proportion
-	for seg, seg_dat in dat.groupby('segment'):
-		# resample mod
-		samples = rng.choice(seg_dat.dvg_len_mod, 
-				size=(seg_dat.dvg_len_mod.shape[0], 10000),
-				replace=True, 
-				p=seg_dat.Rel_support/seg_dat.Rel_support.sum())
-		counted = np.apply_along_axis(lambda x: 
-			np.bincount(x, minlength=3), axis=0, 
-				arr=samples)
-		proportioned = counted / counted.sum(axis=0)
-		q = np.quantile(proportioned, [0, 0.025, 0.5, 0.975,1], axis=1)
-		q_dat[seg] = q
+	p_persistence = long_dat.query('init == True').\
+		groupby(['tspan', 'dvg_len_bin']).\
+		agg({'enrollid': len, 'persistent': sum}).\
+		reset_index().\
+		assign(p = lambda k: k.persistent/k.enrollid)
+	p_persistence_arr = p_persistence[['dvg_len_bin', 'tspan', 'p']].\
+		pivot(index='dvg_len_bin', columns='tspan', values='p')
 
-	max_val = dat.Rel_support.max()*1.025
-	min_val = -dat.Rel_support.max()*0.025
+		
+	max_val = 1.025*dat.Rel_support.max()
+	min_val = -.025*dat.Rel_support.max()
 
 	output = []
+	output.append(f'bin edges = {bins}')
 	for seg in ['PB2', 'PB1', 'PA']:
-		t = mannwhitneyu(
-			dat.query('segment == @seg & dvg_len_mod == 0').Rel_support,
-			dat.query('segment == @seg & dvg_len_mod > 0').Rel_support)
-		output.append('mann whitney u test ')
-		output[-1] += f'comparing relative DVG read support of {seg} DVGs with '
-		output[-1] += f'mod == 0 to those with mod > 0 '
+		t = kruskal(*[i.Rel_support for idx,i in dat.query('segment == @seg').groupby('dvg_len_bin')])
+		output.append('Kruskal-Wallis H-test  ')
+		output[-1] += 'comparing relative DVG read support of DVGs in each bin on the'
+		output[-1] += f' {seg} segment'
 		output[-1] += f': statistic={t.statistic}; pvalue={t.pvalue}' 
-	output.append(str(pd.concat([pd.DataFrame(value, columns=['mod = 0', 'mod = 1', 'mod = 2'], 
-		index=['q0', 'q2.5', 'q50', 'q97.5', 'q1']).\
-		assign(segment = key) for key, value in q_dat.items()])))
+
+	# fit a model for the longitudinal data
+	# first with binned read support
+	# then with continuous
+	logit_in = long_dat.\
+		query('init == True')\
+		[['enrollid', 'segment', 'mapped_start', 'mapped_stop', 'dvg_len', 
+			'dvg_len_bin', 'tspan', 0, 1, 'persistent']].\
+		assign(log10_rel_0_support = lambda k: np.log10(k[0]),
+			shared = lambda k: 1*k.persistent)
+	
+	binned_fit = smf.logit("shared ~ log10_rel_0_support + C(tspan) + C(dvg_len_bin)", 
+			data=logit_in).fit()
+	output.append(str(binned_fit.summary()))
+	continuous_fit = smf.logit("shared ~ log10_rel_0_support + C(tspan) + dvg_len", 
+			data=logit_in).fit()
+	output.append(str(continuous_fit.summary()))
+	
 	with open('figures/final/figure_s9.txt', 'w') as fp:
 		for line in output:
 			fp.write(line + '\n')
 
-		
-	plot_style()
-	segments = ['PB2', 'PB1', 'PA']
-	fig, axs = plt.subplots(2,3,figsize=(6.4*3, 4.8*2), constrained_layout=True)
-	for idx, seg in enumerate(segments):
-		for col_idx, col in enumerate(q_dat[seg].T):
-			axs[0,idx].plot([col_idx, col_idx], [col[1], col[3]], color='#333333', zorder=3)
-		
-		axs[0,idx].scatter([0,1,2], q_dat[seg][2,:], zorder=4, 
-			facecolor='#eaeaea', edgecolor='#333333')
-		axs[0,idx].set_xticks([0,1,2])
-		if idx == 0:
-			axs[0,idx].set_ylabel('Proportion of relative DVG reads', size=16)
-		else:
-			axs[0,idx].set_ylabel(' ', size=16)
-		axs[0,idx].set_xlim(-0.5, 2.5)
-		axs[0,idx].grid(axis='y', color='#eaeaea', zorder=0)
-		axs[0,idx].set_title(seg)
-		axs[0,idx].set_ylim(-0.025, 0.5)
-		axs[1,idx].scatter(
-			dat.query('segment == @seg').dvg_len_mod + rng.normal(0,0.1,size=dat.query('segment == @seg').shape[0]),
-			dat.query('segment == @seg').Rel_support,
-			facecolor='none', edgecolor='#333333', alpha=0.25, zorder=3)
-		axs[1,idx].grid(axis='y', color='#eaeaea', zorder=0)
-		#axs[1,idx].set_yscale("log")
-		axs[1,idx].set_xticks([0,1,2])
-		axs[1,idx].set_xlim(-0.5, 2.5)
-		axs[1,idx].set_ylim(min_val, max_val)
-		axs[1,idx].set_xlabel('deleted nucleotides % 3',size=16)
-		if idx == 0:
-			axs[1,idx].set_ylabel(r'relative read support', size=16)
-		else:
-			axs[1,idx].set_ylabel(r'', size=16)
 
-	x_pos = [-0.12, -0.12, -0.12, -0.14, -0.12, -0.12]
+	plot_style()
+	cmap = mpl.colors.LinearSegmentedColormap.from_list("", ['white', '#333333'])
+	output = []
+	fig, axs_arr = plt.subplots(2,2,figsize=(6.4*2, 4.8*2))
+	axs = axs_arr.flatten()
+	for j, seg in enumerate(['PB2', 'PB1', 'PA']):
+		axs[j] = jitter_boxplot(ax=axs[j], 
+			d=[i.Rel_support for idx,i in dat.query('segment == @seg').groupby('dvg_len_bin')],
+			i=dat.dvg_len_bin.drop_duplicates().values,
+			j=0.25, vert=True, zorder=3, point_alpha=0.5)
+		#axs[j].set_yscale('log')
+		axs[j].set_xticks(dat.dvg_len_bin.drop_duplicates().values)
+		axs[j].set_xticklabels(bin_labels)
+		axs[j].set_ylim(min_val, max_val)
+		axs[j].grid(color='#eaeaea', zorder=1)
+		axs[j].set_ylabel('relative support', size=16)
+		axs[j].set_xlabel('DVG length (nt)', size=16)
+		axs[j].set_title(seg)
+
+	im = axs[3].pcolormesh(p_persistence_arr.T, cmap=cmap, edgecolor='#333333',
+		vmin=0, vmax=1)
+	axs[3].set_xticks(np.arange(0.5, p_persistence_arr.shape[0]+0.5),
+		labels = bin_labels)
+	axs[3].set_yticks(np.arange(0.5, p_persistence_arr.shape[1]+0.5),
+		labels=p_persistence_arr.columns.astype(int))
+	axs[3].set_xlabel('DVG length (nt)', size=16)
+	axs[3].set_ylabel('days between samples', size=16)
+	divider = make_axes_locatable(axs[3])
+	cax = divider.append_axes('right', size='5%', pad=0.1)
+	cb = fig.colorbar(im, cax=cax, orientation='vertical')
+	cb.set_label('prop. persistent DVGs', size=16)
+	
+	x_pos = [-0.1, -0.1, -0.1, -0.1]
 	for ax_idx, ax in enumerate(axs.flatten()):
 		ax.text(x_pos[ax_idx], 1.0, 
-				string.ascii_uppercase[ax_idx], color='#333333', 
-				transform=ax.transAxes, size=16, fontweight='bold')
+			string.ascii_uppercase[ax_idx], color='#333333', 
+			transform=ax.transAxes, size=16, fontweight='bold')
+
 
 	fig.suptitle('Figure S9')
-	fig.savefig("figures/final/figure_s9.pdf")
+	fig.tight_layout()
+	fig.savefig('figures/final/figure_s9.pdf')
 	plt.close()
 
 

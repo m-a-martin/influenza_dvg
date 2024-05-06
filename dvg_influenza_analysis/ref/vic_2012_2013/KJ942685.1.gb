@@ -1,0 +1,125 @@
+LOCUS       KJ942685                2219 bp    cRNA    linear   VRL 13-JUL-2014
+DEFINITION  Influenza A virus (A/Victoria/361/2011(H3N2)) segment 3 polymerase
+            PA (PA) and PA-X protein (PA-X) genes, complete cds.
+ACCESSION   KJ942685
+VERSION     KJ942685.1
+DBLINK      BioProject: PRJNA205638
+KEYWORDS    .
+SOURCE      Influenza A virus (A/Victoria/361/2011(H3N2))
+  ORGANISM  Influenza A virus (A/Victoria/361/2011(H3N2))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 2219)
+  AUTHORS   Wentworth,D.E., Halpin,R.A., Bera,J., Akopov,A., Ransier,A.,
+            Mohan,M., Fedorova,N., Tsitrin,T., Puri,V., Stockwell,T.,
+            Amedeo,P., Appalla,L., Bishop,B., Edworthy,P., Gupta,N., Hoover,J.,
+            Katzel,D., Schobel,S., Shrivastava,S., Thovarai,V., Wang,S.,
+            Kumar,M. and Bucher,D.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (23-MAY-2014) J. Craig Venter Institute, 9704 Medical
+            Center Drive, Rockville, MD 20850, USA
+COMMENT     This work was supported by the National Institute of Allergy and
+            Infectious Diseases (NIAID), Genome Sequencing Centers for
+            Infectious Diseases (GSCID) program.
+            GenBank Accession Numbers KJ942680-KJ942687 represent sequences
+            from the 8 segments of Influenza A virus
+            (A/Victoria/361/2011(H3N2)).
+            
+            ##Genome-Assembly-Data-START##
+            Current Finishing Status :: Finished
+            Assembly Method          :: clc_ref_assemble_long v. 3.22.55705
+            Genome Coverage          :: 393.1x
+            Sequencing Technology    :: Ion Torrent;Illumina
+            ##Genome-Assembly-Data-END##
+FEATURES             Location/Qualifiers
+     source          1..2219
+                     /organism="Influenza A virus (A/Victoria/361/2011(H3N2))"
+                     /mol_type="viral cRNA"
+                     /strain="A/Victoria/361/2011"
+                     /serotype="H3N2"
+                     /host="Homo sapiens"
+                     /db_xref="taxon:1268360"
+                     /segment="3"
+                     /country="Australia: Victoria"
+                     /collection_date="2011"
+     5'UTR           <1..21
+     gene            22..2172
+                     /gene="PA"
+                     /locus_tag="L998_47829gpPA"
+     CDS             22..2172
+                     /gene="PA"
+                     /locus_tag="L998_47829gpPA"
+                     /codon_start=1
+                     /product="polymerase PA"
+                     /protein_id="AIE52628.1"
+                     /translation="MEDFVRQCFNPMIVELAEKAMKEYGEDLKIETNKFAAICTHLEV
+                     CFMYSDFHFINEQGESIVVELDDPNALLKHRFEIIEGRDRTMAWTVVNSICNTTGAGK
+                     PKFLPDLYDYKENRFIEIGVTRREVHIYYLEKANKIKSENTHIHIFSFTGEEMATKAD
+                     YTLDEESRARIKTRLFTIRQEMANRGLWDSFRQSERGEETIEEKFEITGTMRRLADQS
+                     LPPNFSCLENFRAYVDGFEPNGCIEGKLSQMSKEVNAQIEPFLKTTPRPIKLPNGPPC
+                     YQRSKFLLMDALKLSIEDPSHEGEGIPLYDAIKCIKTFFGWKEPYIVKPHEKGINSNY
+                     LLSWKQVLSELQDIENEEKIPRTKNMKKTSQLKWALGENMAPEKVDFENCRDISDLKQ
+                     YDSDEPELRSLSSWMQSEFNKACELTDSVWIELDEIGEDVAPIEHIASMRRNYFTAEV
+                     SHCRATEYIMKGVYINTALLNASCAAMDDFQLIPMISKCRTKEGRRKTNLYGFIIKGR
+                     SHLRNDTDVVNFVSMEFSLTDPRLEPHKWEKYCVLEIGDMLLRSAIGQISRPMFLYVR
+                     TNGTSKVKMKWGMEMRRCLLQSLQQIESMIEAESSVKEKDMTKEFFENKSEAWPIGES
+                     PKGVEEGSIGKVCRTLLAKSVFNSLYASPQLEGFSAESRKLLLVVQALRDNLEPGTFD
+                     LGGLYEAIEECLINDPWVLLNASWFNSFLTHALK"
+     gene            22..781
+                     /gene="PA-X"
+                     /locus_tag="L998_47829gpPA-X"
+     CDS             join(22..594,596..781)
+                     /gene="PA-X"
+                     /locus_tag="L998_47829gpPA-X"
+                     /ribosomal_slippage
+                     /codon_start=1
+                     /product="PA-X protein"
+                     /protein_id="AIE52627.1"
+                     /translation="MEDFVRQCFNPMIVELAEKAMKEYGEDLKIETNKFAAICTHLEV
+                     CFMYSDFHFINEQGESIVVELDDPNALLKHRFEIIEGRDRTMAWTVVNSICNTTGAGK
+                     PKFLPDLYDYKENRFIEIGVTRREVHIYYLEKANKIKSENTHIHIFSFTGEEMATKAD
+                     YTLDEESRARIKTRLFTIRQEMANRGLWDSFVSPKEAKKQLKKNLKSQELCVGLPTKV
+                     SHRTSPALRILEPMWMDSNRTAALRASFLKCPKK"
+     3'UTR           2173..>2219
+ORIGIN      
+        1 gaaagcaggt actgattcaa aatggaagat tttgtgcgac aatgcttcaa cccgatgatt
+       61 gtcgaacttg cagaaaaagc aatgaaagag tatggggagg atctgaaaat tgaaaccaac
+      121 aaatttgcag caatatgcac tcacttggag gtgtgtttca tgtattcaga ttttcatttc
+      181 atcaatgaac aaggcgaatc aatagtggta gaacttgacg atccaaatgc actgttaaag
+      241 cacagatttg aaataatcga ggggagagac agaacaatgg cctggacagt agtaaacagt
+      301 atctgcaaca ctactggagc tggaaaaccg aagtttctac cggatttgta tgattacaaa
+      361 gagaacagat tcatcgaaat tggagtgaca aggagagaag tccacatata ttaccttgaa
+      421 aaggccaata agattaaatc tgagaacaca cacattcaca ttttttcatt cactggggag
+      481 gaaatggcca caaaggcaga ctacactctc gacgaggaaa gcagggctag gattaaaacc
+      541 aggctgttta ccataagaca agaaatggcc aacagaggcc tctgggattc ctttcgtcag
+      601 tccgaaagag gcgaagaaac aattgaagaa aaatttgaaa tcacaggaac tatgcgtagg
+      661 cttgccgacc aaagtctccc accgaacttc tcctgccttg agaattttag agcctatgtg
+      721 gatggattcg aaccgaacgg ctgcattgag ggcaagcttt ctcaaatgtc caaagaagtg
+      781 aatgcccaaa ttgaaccttt tctgaagaca acaccaagac caatcaaact tcctaatgga
+      841 cctccttgtt atcagaggtc caaattcctc ctgatggatg ctttaaaatt gagcattgaa
+      901 gacccaagtc acgaaggaga agggatccca ttatatgatg cgatcaagtg cataaaaaca
+      961 ttctttggat ggaaagaacc ttatatagtc aaaccacacg aaaagggaat aaattcaaat
+     1021 tacctgctgt catggaagca agtactgtca gaattgcagg acattgaaaa tgaggagaag
+     1081 attccaagaa ctaaaaacat gaagaaaacg agtcaactga agtgggctct tggtgaaaac
+     1141 atggcaccag agaaggtaga ctttgaaaac tgcagagaca taagcgattt gaagcaatat
+     1201 gatagtgacg aacctgaatt aaggtcactt tcaagctgga tgcagagtga gttcaacaag
+     1261 gcctgtgagc taactgattc agtctggata gagctcgatg aaattggaga ggacgtagcc
+     1321 ccaattgagc acattgcaag catgagaagg aattatttca cagcagaggt gtcccattgt
+     1381 agagctactg aatacataat gaagggagta tacattaaca ctgccctgct caatgcatcc
+     1441 tgtgcagcaa tggacgattt tcaactaatt cccatgataa gcaagtgcag aactaaagag
+     1501 ggaaggcgaa aaaccaattt atatggattc atcataaagg gaagatctca tttaaggaat
+     1561 gacacagacg tggtaaattt tgtgagcatg gagttttctc tcacagaccc gagacttgaa
+     1621 ccacataaat gggagaaata ctgtgtcctt gagataggag atatgttact aagaagtgcc
+     1681 ataggccaaa tttcaagacc gatgttcttg tatgtgagga caaacggaac atcaaaggtc
+     1741 aaaatgaaat ggggaatgga gatgagacgt tgcctccttc agtcactcca gcagatcgag
+     1801 agcatgattg aagccgagtc ctcagttaaa gagaaagaca tgaccaaaga gttttttgag
+     1861 aataaatcag aagcatggcc cattggggag tcccccaagg gagtggaaga aggttccatt
+     1921 gggaaagtct gtaggactct attggctaag tcagtattca atagcctgta tgcatcacca
+     1981 caattggaag gattttcagc ggagtcaaga aaactgctcc ttgttgttca ggctcttagg
+     2041 gacaacctcg aacctgggac ctttgatctt ggggggctat atgaagcaat tgaggagtgc
+     2101 ctgattaatg atccctgggt tttgctcaat gcgtcttggt tcaactcctt cctgacacat
+     2161 gcattaaaat agttatggca gtgctgctat ttgttatccg tactgtccaa aaaagtacc
+//
+

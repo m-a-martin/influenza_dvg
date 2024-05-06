@@ -1,0 +1,3 @@
+mann whitney u test comparing relative DVG read support of PB2 DVGs with premature stop codons to those without : statistic=1732339.0; pvalue=0.401062581107417
+mann whitney u test comparing relative DVG read support of PB1 DVGs with premature stop codons to those without : statistic=654824.0; pvalue=0.06276059840723294
+mann whitney u test comparing relative DVG read support of PA DVGs with premature stop codons to those without : statistic=5259551.0; pvalue=0.7424312972541245

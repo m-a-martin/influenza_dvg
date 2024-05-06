@@ -1,42 +1,3 @@
-# copy data from HPC
-# copy .par*, .results, .*.tsv
-rsync -a -v --prune-empty-dirs \
-	--include '*/' \
-	--include '*.par*' \
-	--exclude '*' \
-	mmart59@clogin01.sph.emory.edu:/projects/GII4evolution/mmartin/influenza_dvg_mccrone/ \
-	./
-
-rsync -a -v --prune-empty-dirs \
-	--include '*/' \
-	--include '*_dp.tsv*' \
-	--exclude '*' \
-	mmart59@clogin01.sph.emory.edu:/projects/GII4evolution/mmartin/influenza_dvg_mccrone/ \
-	./
-
-rsync -a -v --prune-empty-dirs \
-	--include '*/' \
-	--include '*.fasta' \
-	--exclude '*' \
-	mmart59@clogin01.sph.emory.edu:/projects/GII4evolution/mmartin/influenza_dvg_mccrone/ \
-	./
-
-# maps read name to DVG
-rsync -a -v --prune-empty-dirs \
-	--include '*/' \
-	--include '*_Recombination_Results.txt' \
-	--exclude '*' \
-	mmart59@clogin01.sph.emory.edu:/projects/GII4evolution/mmartin/influenza_dvg_mccrone/ \
-	./
-
-rsync -a -v --prune-empty-dirs \
-	--include '*/' \
-	--include 'DeDuped*.results' \
-	--exclude '*' \
-	mmart59@clogin01.sph.emory.edu:/projects/GII4evolution/mmartin/influenza_dvg_mccrone/ \
-	./
-
-
 # align and get reference maps
 # to do automate seperation of reference sequence
 for seg in pb2 pb1 pa ha np na m ns
@@ -103,6 +64,22 @@ python3 scripts/filter_dat.py \
 	--minDel 500 \
 	--filterPlasmid
 
+# compare filtered data to raw data
+python3 scripts/compare_filtered_unfiltered_n.py \
+	--filteredDat 'output/parsed_dvgs_0.005_True_True_0_all.tsv' \
+	--rawDat  'output/parsed_dvgs.tsv' \
+	--minRelReads 5E-3 \
+	--padSize  210 \
+	--onlyShared
+
+
+python3 scripts/null_premature_stop.py \
+	--dat output/parsed_dvgs_0.005_True_True_500_PB2_PB1_PA.tsv \
+	--fastaDir "*_output/consensus/*.fasta" \
+	--padSize 210 \
+	--mapDir "data/*_map.tsv"
+
+
 # figures
 python3 scripts/plot_figure_1.py \
 	--dat output/parsed_dvgs_0.005_True_True_0_all.tsv \
@@ -143,49 +120,54 @@ python3 scripts/plot_figure_s2.py \
 	--dat output/parsed_dvgs_0.005_True_True_0_all.tsv \
 	--allRuns data/all_runs.tsv
 
-
 python3 scripts/plot_figure_s3.py \
 	--dat output/parsed_dvgs_0.005_True_True_0_all.tsv \
 	--padSize 210
 
-
 python3 scripts/plot_figure_s4.py \
-	--dat output/parsed_dvgs_0.005_True_True_0_PB2_PB1_PA.tsv \
+	--dat output/parsed_dvgs_0.005_True_True_0_all.tsv \
 	--padSize 210 \
-	--mapDir "data/*_map.tsv" \
-	--allRuns data/all_runs.tsv       
+	--fastaDir "*_output/consensus/*.fasta" \
+	--allRuns data/all_runs.tsv \
+	--nullPremature output/null_premature_stop.tsv
+
 
 python3 scripts/plot_figure_s5.py \
-	--dat output/parsed_dvgs_0.005_True_True_0_PB2_PB1_PA.tsv 
+	--dat output/parsed_dvgs_0.005_True_True_0_PB2_PB1_PA.tsv \
+	--allRuns data/all_runs.tsv \
+	--mapDir "data/*_map.tsv" \
+	--padSize 210
+
 
 python3 scripts/plot_figure_s6.py \
+	--dat output/parsed_dvgs_0.005_True_True_0_PB2_PB1_PA.tsv 
+
+
+python3 scripts/plot_figure_s7.py \
 	--allRuns data/all_runs.tsv \
 	--dat output/parsed_dvgs_0.005_True_True_500_PB2_PB1_PA.tsv \
 	--mapDir "data/*_map.tsv" \
 	--padSize 210 \
 	--minTspan 1
 
-python3 scripts/plot_figure_s7.py \
+
+python3 scripts/plot_figure_s8.py \
 	--allRuns data/all_runs.tsv \
 	--dat output/parsed_dvgs_0.005_True_True_500_PB2_PB1_PA.tsv 
 
-python3 scripts/plot_figure_s8.py \
+
+python3 scripts/plot_figure_s9.py \
 	--allRuns data/all_runs.tsv \
 	--dat output/parsed_dvgs_0.005_True_True_500_PB2_PB1_PA.tsv  \
 	--mapDir "data/*_map.tsv" \
 	--padSize 210
 
-python3 scripts/plot_figure_s9.py \
-	--dat output/parsed_dvgs_0.005_True_True_500_PB2_PB1_PA.tsv 
-
-# generate null premature stop 
-python3 scripts/null_premature_stop.py \
-	--allRuns data/all_runs.tsv
-	--dat output/parsed_dvgs_0.005_True_True_500_PB2_PB1_PA.tsv
-	--fastaDir "*_output/consensus/*.fasta"
-	--padSize 210
 
 python3 scripts/plot_figure_s10.py \
+	--dat output/parsed_dvgs_0.005_True_True_500_PB2_PB1_PA.tsv 
+
+
+python3 scripts/plot_figure_s11.py \
 	--dat output/parsed_dvgs_0.005_True_True_500_PB2_PB1_PA.tsv \
 	--fastaDir "*_output/consensus/*.fasta" \
 	--nullPremature output/null_premature_stop.tsv \

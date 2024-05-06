@@ -1,0 +1,113 @@
+LOCUS       KJ942687                2340 bp    cRNA    linear   VRL 13-JUL-2014
+DEFINITION  Influenza A virus (A/Victoria/361/2011(H3N2)) segment 1 polymerase
+            PB2 (PB2) gene, complete cds.
+ACCESSION   KJ942687
+VERSION     KJ942687.1
+DBLINK      BioProject: PRJNA205638
+KEYWORDS    .
+SOURCE      Influenza A virus (A/Victoria/361/2011(H3N2))
+  ORGANISM  Influenza A virus (A/Victoria/361/2011(H3N2))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 2340)
+  AUTHORS   Wentworth,D.E., Halpin,R.A., Bera,J., Akopov,A., Ransier,A.,
+            Mohan,M., Fedorova,N., Tsitrin,T., Puri,V., Stockwell,T.,
+            Amedeo,P., Appalla,L., Bishop,B., Edworthy,P., Gupta,N., Hoover,J.,
+            Katzel,D., Schobel,S., Shrivastava,S., Thovarai,V., Wang,S.,
+            Kumar,M. and Bucher,D.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (23-MAY-2014) J. Craig Venter Institute, 9704 Medical
+            Center Drive, Rockville, MD 20850, USA
+COMMENT     This work was supported by the National Institute of Allergy and
+            Infectious Diseases (NIAID), Genome Sequencing Centers for
+            Infectious Diseases (GSCID) program.
+            GenBank Accession Numbers KJ942680-KJ942687 represent sequences
+            from the 8 segments of Influenza A virus
+            (A/Victoria/361/2011(H3N2)).
+            
+            ##Genome-Assembly-Data-START##
+            Current Finishing Status :: Finished
+            Assembly Method          :: clc_ref_assemble_long v. 3.22.55705
+            Genome Coverage          :: 390.6x
+            Sequencing Technology    :: Ion Torrent;Illumina
+            ##Genome-Assembly-Data-END##
+FEATURES             Location/Qualifiers
+     source          1..2340
+                     /organism="Influenza A virus (A/Victoria/361/2011(H3N2))"
+                     /mol_type="viral cRNA"
+                     /strain="A/Victoria/361/2011"
+                     /serotype="H3N2"
+                     /host="Homo sapiens"
+                     /db_xref="taxon:1268360"
+                     /segment="1"
+                     /country="Australia: Victoria"
+                     /collection_date="2011"
+     5'UTR           1..27
+     gene            28..2307
+                     /gene="PB2"
+                     /locus_tag="L998_47829gpPB2"
+     CDS             28..2307
+                     /gene="PB2"
+                     /locus_tag="L998_47829gpPB2"
+                     /codon_start=1
+                     /product="polymerase PB2"
+                     /protein_id="AIE52631.1"
+                     /translation="MERIKELRNLMSQSRTREILTKTTVDHMAIIKKYTSGRQEKNPS
+                     LRMKWMMAMKYPITADKRVTEMVPERNEQGQTLWSKMSDAGSDRVMVSPLAVTWWNRN
+                     GPVTSTVHYPKVYKTYFDKVERLKHGTFGPVHFRNQVKIRRRVDINPGHADLSAKEAQ
+                     DVIMEVVFPNEVGARILTSESQLTITKEKKEELRDCKISPLMVAYMLERELVRKTRFL
+                     PVAGGTSSIYIEVLHLTQGTCWEQMYTPGGGVRNDDVDQSLIIAARNIVRRAAVSADP
+                     LASLLEMCHSTQIGGTRMVDILRQNPTEEQAVDICKAAMGLRISSSFSFGGFTFKRTS
+                     GSSVKKEEEVLTGNLQTLRIRVHEGYEEFTMVGKRATAILRKATRRLVQLIVSGRDEQ
+                     SIAEAIIVAMVFSQEDCMIKAVRGDLNFVNRANQRLNPMHQLLRHFQKDAKVLFQNWG
+                     VEHIDSVMGMVGVLPDMTPSTEMSMRGIRVSKMGVDEYSSTERVVVSIDRFLRVRDQR
+                     GNVLLSPEEVSETQGTERLTITYSSSMMWEINGPESVLVNTYQWIIRNWEAVKIQWSQ
+                     NPAMLYNKMEFEPFQSLVPKAIRSQYSGFVRTLFQQMRDVLGTFDTAQIIKLLPFAAA
+                     PPKQSRMQFSSLTVNVRGSGMRILVRGNSPVFNYNKTTKRLTILGKDAGTLIEDPDES
+                     TSGVESAVLRGFLIIGKEDRRYGPALSINELSNLAKGEKANVLIGQGDVVLVMKRKRD
+                     SSILTDSQTATKRIRMAIN"
+     3'UTR           2308..>2340
+ORIGIN      
+        1 agcaaaagca ggtcaattat attcagtatg gaaagaataa aagaactacg gaatctgatg
+       61 tcgcagtctc gcactcgcga gatactgaca aaaaccacag tggaccatat ggccataatt
+      121 aagaagtaca catcggggag acaggaaaag aacccgtcac ttaggatgaa atggatgatg
+      181 gcaatgaaat atccaatcac tgctgacaaa agggtaacag aaatggttcc ggagagaaat
+      241 gaacaaggac aaactctatg gagtaaaatg agtgatgctg gatcagatag agtgatggta
+      301 tcacctttgg ctgtaacatg gtggaatagg aatggacccg tgacaagtac ggtccattac
+      361 ccaaaagtgt acaaaactta tttcgacaaa gtcgaaaggt taaaacatgg aacctttggc
+      421 cctgtccatt tcagaaatca agtcaagata cgcagaagag tagacataaa ccctggtcat
+      481 gcagacctca gtgccaaaga ggcacaagat gtaattatgg aagttgtttt tcccaatgaa
+      541 gtgggagcca gaatactaac atcagaatca caactaacaa taactaagga gaaaaaagaa
+      601 gagctccgag attgcaaaat ttctcccttg atggtcgcat acatgttaga gagagaactt
+      661 gtacgaaaaa caagatttct cccagttgct ggcggaacaa gcagtatata cattgaagtt
+      721 ttacatttga ctcagggaac gtgttgggaa caaatgtaca ctccaggtgg aggagtgagg
+      781 aatgacgatg ttgaccaaag cctaattatt gcggccagga acatagtaag aagagccgca
+      841 gtatcagcag atccactagc atctttattg gagatgtgcc acagcacgca aattggcgga
+      901 acaaggatgg tggacattct tagacagaac ccgactgaag aacaagctgt ggatatatgc
+      961 aaggctgcaa tgggattgag aatcagctca tccttcagct ttggtggctt tacatttaaa
+     1021 agaacaagcg ggtcatcagt caaaaaagaa gaagaggtgc ttacaggcaa tctccaaaca
+     1081 ttgagaataa gagtacatga ggggtatgag gagttcacaa tggtagggaa aagagcaaca
+     1141 gctatactaa gaaaagcaac cagaagattg gttcaactca tagtgagtgg aagagacgaa
+     1201 cagtcaatag ccgaagcaat aatcgtggcc atggtgtttt cacaagaaga ttgcatgata
+     1261 aaagcagtta gaggtgacct gaattttgtc aacagagcaa atcagcggtt gaaccccatg
+     1321 catcagcttt taaggcattt tcagaaagat gcgaaagtgc tctttcaaaa ttggggagtt
+     1381 gaacacatcg acagtgtgat gggaatggtt ggagtattac cagacatgac tccaagcaca
+     1441 gagatgtcaa tgagaggaat aagagtcagc aaaatgggtg tggatgaata ctccagcaca
+     1501 gagagggtgg tggttagcat tgatcggttt ttgagagttc gagaccaacg tgggaatgta
+     1561 ttattatctc ctgaggaggt cagtgaaaca cagggaactg agagactgac aataacttat
+     1621 tcatcgtcga tgatgtggga gattaacggt cctgagtcgg ttttggtcaa tacctatcaa
+     1681 tggatcatca gaaattggga agctgtcaaa attcaatggt ctcagaatcc tgcaatgttg
+     1741 tacaacaaaa tggaatttga accatttcaa tctttagtcc ccaaggccat tagaagccaa
+     1801 tacagtgggt ttgtcagaac tctattccaa caaatgagag acgtacttgg gacatttgac
+     1861 actgcccaga taataaagct tctccctttt gcagctgctc caccgaagca aagcagaatg
+     1921 cagttctctt cactgactgt gaatgtgagg ggatcaggga tgagaatact tgtaaggggc
+     1981 aattctcctg tattcaacta caacaaaacc actaaaaggc taacaattct cggaaaagat
+     2041 gccggcactt taattgaaga cccagatgaa agcacatcag gagtggagtc cgccgtcttg
+     2101 agagggttcc tcattatagg taaggaagac agaagatacg gaccagcatt aagcatcaat
+     2161 gaactgagta accttgcaaa aggggaaaag gctaatgtgc taatcgggca aggagacgtg
+     2221 gtgttggtaa tgaaacgaaa acgggactct agcatactta ctgacagcca gacagcgacc
+     2281 aaaagaattc ggatggccat caattaatgc tgaatagttt aaaaacgacc ttgtttctac
+//
+

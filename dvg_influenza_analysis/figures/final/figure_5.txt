@@ -9,5 +9,5 @@ among household samples there are an average of 1.4102564102564104 [1.7277601672
 Mann-Whitney U test comparing the number of shared DVGs among community and household samples statistic = 166181.0, p-value = 0.07206737009873194
 In total 55 DVGs from 23 transmission pairs are shared between donor and recipient
 shared DVGs have mean [sd] donor relative read support of 0.030332949861813133 [0.10641058378895484]
-non-shared DVGs have mean [sd] donor relative read support of 0.03148303340359525 [0.16697598577996592]
-mann-whitney u test p-value comparing the relative support of shared and non-shared pair DVGs = 0.6277905693001478
+non-shared DVGs have mean [sd] donor relative read support of 0.031070625342185198 [0.19597973341866598]
+mann-whitney u test p-value comparing the relative support of shared and non-shared pair DVGs = 0.7784059914084548

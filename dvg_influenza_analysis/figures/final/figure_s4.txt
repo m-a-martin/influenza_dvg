@@ -1,0 +1,10 @@
+there are a total of 13445 unique DVG species
+the most common DVG is NS 316_545
+which has a fuzz value of 11.0 and a count of 125
+other DVGs with a fuzz >= most common DVG fuzz:
+HA 1244_1381, fuzz=11.0, n=1
+NP 426_618, fuzz=11.0, n=1
+PA 1086_1919, fuzz=11.0, n=1
+M 522_664, fuzz=11.0, n=2
+M 523_665, fuzz=12.0, n=117
+NS 316_545, fuzz=11.0, n=125

@@ -1,3 +1,5 @@
+AMONG ALL SEGMENTS:
+
 the DVG present in the most samples is NS 316 545
 which is present in 125 out of 217 samples
 the next most prevalent DVG is present in 121 samplesM 523 665
@@ -5,3 +7,12 @@ the next most prevalent DVG is present in 121 samplesM 523 665
 12800 DVGs are present in only a single sample
 47.85098930228155% of DVGs are observed in only 1 sample
 DVGs present in mean [sd] 1.587421875 [3.119694338676289] samples
+AMONG POL SEGMENTS:
+
+the DVG present in the most samples is PA 314 1585
+which is present in 55 out of 217 samples
+the next most prevalent DVG is present in 45 samplesPA 358 1543
+7097 out of 
+8971 DVGs are present in only a single sample
+33.59367603900407% of DVGs are observed in only 1 sample
+DVGs present in mean [sd] 1.4858990079143908 [1.8199613550389293] samples

@@ -11,6 +11,7 @@ try:
 except:
 	from scripts.utils import plot_style
 
+
 def run():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--allRuns', default=None)
@@ -85,7 +86,6 @@ def run():
 		['Rel_support'].\
 		apply(max).reset_index()
 	
-	# in the case of longitudinal samples, get maximum read support across the two
 	trans_pairs = pair_dat.query('type == "household"').\
 		assign(enrollid_1_long = lambda k: np.isin(k.enrollid_1, long.values),
 			enrollid_2_long = lambda k: np.isin(k.enrollid_2, long.values))
@@ -180,13 +180,12 @@ def run():
 		pd.concat([
 			all_pair_dat.query("type == 'household' & cat =='donor_only'").\
 				query('rel_support_0 > 0').rel_support_0,
-			all_pair_dat.query("type == 'household' & cat =='recipient_only'").\
+			all_pair_dat.query("type == 'household' & cat =='recipient_only' & double == True").\
 				query('rel_support_1 > 0').rel_support_1])
 
 
-
-
 	#### TABULATE NUMBER OF SHARED BETWEEN PAIRS / NOT PAIRS ####
+	# for pairs with ambiguous ordering, we consider them only *once* in this analysis
 	#  mann whitney u 
 	t = mannwhitneyu(all_pair_counted.query('type == "household"').num_shared,
 		all_pair_counted.query('type == "community"').num_shared)
@@ -219,7 +218,7 @@ def run():
 	output.append(f'mann-whitney u test p-value comparing the relative support of shared and non-shared pair DVGs = {mwu.pvalue}')
 
 
-	with open('figures/final/figure_4.txt', 'w') as fp:
+	with open('figures/final/figure_5.txt', 'w') as fp:
 		for line in output:
 			fp.write(line+'\n')
 
@@ -227,16 +226,16 @@ def run():
 	plot_style()
 	fig, axs = plt.subplots(1, 3, figsize=(6.4*2.4, 4.8), constrained_layout=True)
 	axs[0].bar(
-		all_pair_counted_plot.query('type == "community"')['num_shared_x']-0.25,
+		all_pair_counted_plot.query('type == "community"')['num_shared_x']-0.2,
 		all_pair_counted_plot.query('type == "community"')['density'],
-		width=0.5,
+		width=0.4,
 		edgecolor='#333333',
 		facecolor='#4d4d4d',
 		label='unlinked pair', zorder=3)
 	axs[0].bar(
-		all_pair_counted_plot.query('type == "household"')['num_shared_x']+0.25,
+		all_pair_counted_plot.query('type == "household"')['num_shared_x']+0.2,
 		all_pair_counted_plot.query('type == "household"')['density'],
-		width=0.5,
+		width=0.4,
 		edgecolor='#333333',
 		facecolor='#eaeaea',
 		label='transmission pair', zorder=3)
@@ -268,6 +267,13 @@ def run():
 	axs[2].grid(color='#eaeaea', zorder=0)
 	axs[2].set_title('shared DVGs')
 	axs[2].set_xlabel(r'$log_{10}$(relative read support)', size=mpl.rcParams['axes.titlesize'])
+	
+	x_pos = [-0.14, -0.13, -0.12]
+	for ax_idx, ax in enumerate(axs.flatten()):
+		ax.text(x_pos[ax_idx], 1.0, 
+			string.ascii_uppercase[ax_idx], color='#333333', 
+			transform=ax.transAxes, size=16, fontweight='bold')
+
 	fig.savefig('figures/final/figure_5.pdf')
 	plt.close()
 

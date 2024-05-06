@@ -1,0 +1,124 @@
+LOCUS       KJ942686                2333 bp    cRNA    linear   VRL 13-JUL-2014
+DEFINITION  Influenza A virus (A/Victoria/361/2011(H3N2)) segment 2 polymerase
+            PB1 (PB1) and PB1-F2 protein (PB1-F2) genes, complete cds.
+ACCESSION   KJ942686
+VERSION     KJ942686.1
+DBLINK      BioProject: PRJNA205638
+KEYWORDS    .
+SOURCE      Influenza A virus (A/Victoria/361/2011(H3N2))
+  ORGANISM  Influenza A virus (A/Victoria/361/2011(H3N2))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 2333)
+  AUTHORS   Wentworth,D.E., Halpin,R.A., Bera,J., Akopov,A., Ransier,A.,
+            Mohan,M., Fedorova,N., Tsitrin,T., Puri,V., Stockwell,T.,
+            Amedeo,P., Appalla,L., Bishop,B., Edworthy,P., Gupta,N., Hoover,J.,
+            Katzel,D., Schobel,S., Shrivastava,S., Thovarai,V., Wang,S.,
+            Kumar,M. and Bucher,D.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (23-MAY-2014) J. Craig Venter Institute, 9704 Medical
+            Center Drive, Rockville, MD 20850, USA
+COMMENT     This work was supported by the National Institute of Allergy and
+            Infectious Diseases (NIAID), Genome Sequencing Centers for
+            Infectious Diseases (GSCID) program.
+            GenBank Accession Numbers KJ942680-KJ942687 represent sequences
+            from the 8 segments of Influenza A virus
+            (A/Victoria/361/2011(H3N2)).
+            
+            ##Genome-Assembly-Data-START##
+            Current Finishing Status :: Finished
+            Assembly Method          :: clc_ref_assemble_long v. 3.22.55705
+            Genome Coverage          :: 391.9x
+            Sequencing Technology    :: Ion Torrent;Illumina
+            ##Genome-Assembly-Data-END##
+FEATURES             Location/Qualifiers
+     source          1..2333
+                     /organism="Influenza A virus (A/Victoria/361/2011(H3N2))"
+                     /mol_type="viral cRNA"
+                     /strain="A/Victoria/361/2011"
+                     /serotype="H3N2"
+                     /host="Homo sapiens"
+                     /db_xref="taxon:1268360"
+                     /segment="2"
+                     /country="Australia: Victoria"
+                     /collection_date="2011"
+     5'UTR           <1..16
+     gene            17..2290
+                     /gene="PB1"
+                     /locus_tag="L998_47829gpPB1"
+     CDS             17..2290
+                     /gene="PB1"
+                     /locus_tag="L998_47829gpPB1"
+                     /codon_start=1
+                     /product="polymerase PB1"
+                     /protein_id="AIE52629.1"
+                     /translation="MDVNPTLLFLKVPAQNAISTTFPYTGDPPYSHGTGTGYTMDTVN
+                     RTHQYSERGKWTTNTETGAPQLNPIDGPLPEDNEPSGYAQTDCVLEAMAFLEESHPGI
+                     FENSCLETMEAVQQTRVDKLTQGRQTYDWTLNRNQPAATALANTIEVFRSNGLTANES
+                     GRLIDFLKDVMESMDKEEMEITTHFQRKRRVRDNMTKKMVTQRTIGKKKQRVNKRGYL
+                     IRALTLNTMTKDAERGKLKRRAIATPGMQIRGFVYFVETLARSICEKLEQSGLPVGGN
+                     EKKAKLANVVRKMMTNSQDTELSFTITGDNTKWNENQNPRMFLAMITYITKNQPEWFR
+                     NILSIAPIMFSNKMARLGKGYMFESKRMKLRTQIPAEMLASIDLKYFNESTRKKIEKI
+                     RPLLIDGTASLSPGMMMGMFNMLSTVLGVSILNLGQKKYTKTTYWWDGLQSSDDFALI
+                     VNAPNHEGIQAGVDRFYRTCKLVGINMSKKKSYINKTGTFEFTSFFYRYGFVANFSME
+                     LPSFGVSGINESADMSIGVTVIKNNMINNDLGPATAQMALQLFIKDYRYTYRCHRGDT
+                     QIQTRRSFEIKKLWDQTQSRTGLLVSDGGPNLYNIRNLHIPEVCLKWELMDENYRGRL
+                     CNPLNPFVSHKEIESVNNAVVMPAHGPAKSMEYDAVATTHSWIPKRNRSILNTSQRGI
+                     LEDEQMYQKCCNLFEKFFPSSSYRRPIGISSMVEAMVSRARIDARIDFESGRIKKEEF
+                     SEIMKICSTIEELRRQK"
+     gene            111..383
+                     /gene="PB1-F2"
+                     /locus_tag="L998_47829gpPB1-F2"
+     CDS             111..383
+                     /gene="PB1-F2"
+                     /locus_tag="L998_47829gpPB1-F2"
+                     /codon_start=1
+                     /product="PB1-F2 protein"
+                     /protein_id="AIE52630.1"
+                     /translation="MEQGQGTLWTQSTEHTNIQRGGSGRQIQKLGRPSSTQLMDHYLR
+                     IMNQVDMHKQTVSWRLWPSLKNPTQVSLRTHALKQWKPFNRQGWTN"
+     3'UTR           2291..2333
+ORIGIN      
+        1 caggcaaacc atttgaatgg atgtcaatcc gactctactg ttcctaaaag ttccagcgca
+       61 aaatgccata agcacaacat tcccttatac tggagatcct ccatacagcc atggaacagg
+      121 gacagggtac actatggaca cagtcaacag aacacaccaa tattcagaga gggggaagtg
+      181 gacgacaaat acagaaactg gggcgcccca gctcaaccca attgatggac cactacctga
+      241 ggataatgaa ccaagtggat atgcacaaac agactgtgtc ctggaggcta tggccttcct
+      301 tgaagaatcc cacccaggta tctttgagaa ctcatgcctt gaaacaatgg aagccgttca
+      361 acagacaagg gtggacaaac taacccaagg tcgccaaact tatgattgga cattaaacag
+      421 gaatcaaccg gcagcaactg ctttagccaa caccatagaa gtctttagat cgaacggatt
+      481 aacagctaat gaatcaggaa ggctaataga tttcctcaag gatgtgatgg aatcaatgga
+      541 taaagaggaa atggagataa ctacacactt tcaaagaaaa aggagagtaa gggacaacat
+      601 gaccaagaaa atggtcacac aaagaacaat agggaagaaa aagcaaagag tgaataagag
+      661 aggctaccta ataagagctt tgacattgaa cacgatgacc aaagatgcag agagaggcaa
+      721 attaaaaaga agggctattg caacacccgg gatgcaaatt agagggttcg tgtacttcgt
+      781 tgaaacttta gctagaagca tttgcgaaaa gcttgaacag tctggacttc cggttggggg
+      841 taatgaaaag aaggccaaac tggcaaatgt tgtgagaaaa atgatgacta attcacaaga
+      901 cacagagctt tctttcacaa tcactgggga caacactaag tggaatgaaa atcaaaaccc
+      961 ccgaatgttt ttggcgatga ttacatacat cacaaagaat caacctgagt ggttcagaaa
+     1021 catcctgagc atcgcaccaa taatgttctc aaacaaaatg gcaagactgg gaaaaggata
+     1081 catgttcgag agtaagagaa tgaagctccg gacacaaata cctgcagaaa tgctagcaag
+     1141 cattgacctg aagtatttca atgaatcaac aaggaagaaa attgagaaaa taaggcctct
+     1201 tctaatagat ggcacagcat cattgagccc tggaatgatg atgggcatgt tcaacatgct
+     1261 aagtacagtt ttaggagtct cgatactgaa tcttggacaa aagaaataca ccaagacaac
+     1321 atactggtgg gatgggctcc aatcctcaga cgattttgcc ctcatagtga atgcaccaaa
+     1381 tcatgaggga atacaagcag gagtggatag attctacagg acctgcaagt tagtgggaat
+     1441 caacatgagc aaaaagaagt cctatataaa taaaacaggg acatttgaat tcactagctt
+     1501 tttttatcga tatggatttg ttgctaattt tagcatggag ctgccaagtt ttggagtgtc
+     1561 tggaataaac gagtcagctg acatgagcat tggagtaaca gtgataaaga acaacatgat
+     1621 aaacaatgac cttggaccag caacagccca aatggctctc caattgttca tcaaagatta
+     1681 cagatacaca tatcggtgcc atagaggaga cacacaaatc caaacgagaa ggtcattcga
+     1741 gataaagaag ctgtgggatc aaacccaatc aaggacagga ctattggtat cagatggggg
+     1801 accaaactta tacaatatcc ggaatcttca catccctgaa gtctgcttaa agtgggagct
+     1861 gatggatgag aattatcggg gaagactttg taatcccctg aatccctttg ttagccataa
+     1921 agaaattgag tctgtaaaca atgctgtagt aatgccagcc catggtccgg ccaaaagtat
+     1981 ggaatatgat gccgttgcaa ctacacactc ctggattccc aaaaggaacc gctctattct
+     2041 aaacacaagc caaaggggaa ttcttgagga tgaacagatg taccagaagt gctgcaactt
+     2101 gttcgagaaa tttttcccta gtagttcata taggagaccg attggaattt ctagcatggt
+     2161 ggaggccatg gtgtctaggg cccggattga tgccagaatt gacttcgagt ctggaaggat
+     2221 taagaaggaa gagttctctg agatcatgaa gatctgttcc accattgaag aactcagacg
+     2281 gcaaaaataa tgaatttagc ttgtccttca tgaaaaaatg ccttgtttct act
+//
+

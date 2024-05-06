@@ -4,8 +4,8 @@ PB2
 Dep. Variable:            Rel_support   R-squared:                       0.015
 Model:                            OLS   Adj. R-squared:                  0.011
 Method:                 Least Squares   F-statistic:                     3.303
-Date:                Sun, 18 Feb 2024   Prob (F-statistic):             0.0705
-Time:                        11:11:56   Log-Likelihood:                -408.07
+Date:                Sun, 05 May 2024   Prob (F-statistic):             0.0705
+Time:                        10:45:01   Log-Likelihood:                -408.07
 No. Observations:                 217   AIC:                             820.1
 Df Residuals:                     215   BIC:                             826.9
 Df Model:                           1                                         
@@ -30,8 +30,8 @@ PB1
 Dep. Variable:            Rel_support   R-squared:                       0.005
 Model:                            OLS   Adj. R-squared:                  0.001
 Method:                 Least Squares   F-statistic:                     1.187
-Date:                Sun, 18 Feb 2024   Prob (F-statistic):              0.277
-Time:                        11:11:56   Log-Likelihood:                -264.46
+Date:                Sun, 05 May 2024   Prob (F-statistic):              0.277
+Time:                        10:45:01   Log-Likelihood:                -264.46
 No. Observations:                 217   AIC:                             532.9
 Df Residuals:                     215   BIC:                             539.7
 Df Model:                           1                                         
@@ -56,8 +56,8 @@ PA
 Dep. Variable:            Rel_support   R-squared:                       0.005
 Model:                            OLS   Adj. R-squared:                 -0.000
 Method:                 Least Squares   F-statistic:                    0.9802
-Date:                Sun, 18 Feb 2024   Prob (F-statistic):              0.323
-Time:                        11:11:56   Log-Likelihood:                -531.95
+Date:                Sun, 05 May 2024   Prob (F-statistic):              0.323
+Time:                        10:45:01   Log-Likelihood:                -531.95
 No. Observations:                 217   AIC:                             1068.
 Df Residuals:                     215   BIC:                             1075.
 Df Model:                           1                                         
@@ -82,8 +82,8 @@ HA
 Dep. Variable:            Rel_support   R-squared:                       0.005
 Model:                            OLS   Adj. R-squared:                  0.000
 Method:                 Least Squares   F-statistic:                     1.082
-Date:                Sun, 18 Feb 2024   Prob (F-statistic):              0.299
-Time:                        11:11:56   Log-Likelihood:                 74.742
+Date:                Sun, 05 May 2024   Prob (F-statistic):              0.299
+Time:                        10:45:01   Log-Likelihood:                 74.742
 No. Observations:                 217   AIC:                            -145.5
 Df Residuals:                     215   BIC:                            -138.7
 Df Model:                           1                                         
@@ -108,8 +108,8 @@ NP
 Dep. Variable:            Rel_support   R-squared:                       0.100
 Model:                            OLS   Adj. R-squared:                  0.096
 Method:                 Least Squares   F-statistic:                     23.98
-Date:                Sun, 18 Feb 2024   Prob (F-statistic):           1.91e-06
-Time:                        11:11:56   Log-Likelihood:                 344.85
+Date:                Sun, 05 May 2024   Prob (F-statistic):           1.91e-06
+Time:                        10:45:01   Log-Likelihood:                 344.85
 No. Observations:                 217   AIC:                            -685.7
 Df Residuals:                     215   BIC:                            -678.9
 Df Model:                           1                                         
@@ -134,8 +134,8 @@ NA
 Dep. Variable:            Rel_support   R-squared:                       0.009
 Model:                            OLS   Adj. R-squared:                  0.005
 Method:                 Least Squares   F-statistic:                     2.034
-Date:                Sun, 18 Feb 2024   Prob (F-statistic):              0.155
-Time:                        11:11:56   Log-Likelihood:                -1.0017
+Date:                Sun, 05 May 2024   Prob (F-statistic):              0.155
+Time:                        10:45:01   Log-Likelihood:                -1.0017
 No. Observations:                 217   AIC:                             6.003
 Df Residuals:                     215   BIC:                             12.76
 Df Model:                           1                                         
@@ -160,8 +160,8 @@ M
 Dep. Variable:            Rel_support   R-squared:                       0.096
 Model:                            OLS   Adj. R-squared:                  0.092
 Method:                 Least Squares   F-statistic:                     22.93
-Date:                Sun, 18 Feb 2024   Prob (F-statistic):           3.12e-06
-Time:                        11:11:56   Log-Likelihood:                 143.68
+Date:                Sun, 05 May 2024   Prob (F-statistic):           3.12e-06
+Time:                        10:45:01   Log-Likelihood:                 143.68
 No. Observations:                 217   AIC:                            -283.4
 Df Residuals:                     215   BIC:                            -276.6
 Df Model:                           1                                         
@@ -186,8 +186,8 @@ NS
 Dep. Variable:            Rel_support   R-squared:                       0.021
 Model:                            OLS   Adj. R-squared:                  0.017
 Method:                 Least Squares   F-statistic:                     4.625
-Date:                Sun, 18 Feb 2024   Prob (F-statistic):             0.0326
-Time:                        11:11:56   Log-Likelihood:                -61.632
+Date:                Sun, 05 May 2024   Prob (F-statistic):             0.0326
+Time:                        10:45:01   Log-Likelihood:                -61.632
 No. Observations:                 217   AIC:                             127.3
 Df Residuals:                     215   BIC:                             134.0
 Df Model:                           1                                         

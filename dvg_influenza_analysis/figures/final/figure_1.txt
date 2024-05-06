@@ -1,3 +1,5 @@
+There are a total of 217 samples
+collected from 168 individuals
 DVGs observed in 217/217 SPECIDS
 mann whitney u test comparing relative DVG read support on PB2, PB1, PA, NS v. HA, NP. NA, M: statistic=584033.5; pvalue=8.743113846765422e-88
 Mann-Whtiney U test comparing number of unique DVGs per sample on PB2, PB1, PA v. HA, NP, NA, M, NS: statistic=540876.0; pvalue=2.6443344239295332e-77

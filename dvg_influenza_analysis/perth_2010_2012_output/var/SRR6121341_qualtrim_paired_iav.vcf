@@ -1,0 +1,77 @@
+##fileformat=VCFv4.2
+##FILTER=<ID=PASS,Description="All filters passed">
+##bcftoolsVersion=1.8+htslib-1.8
+##bcftoolsCommand=mpileup --threads 4 -A -d 1000 -q 20 -Q 20 -I -f /projects/GII4evolution/mmartin/influenza_dvg_mccrone/ref/perth_2010_2012/perth_2010_2012.fasta SRR6121341_qualtrim_paired_iav.bam
+##reference=file:///projects/GII4evolution/mmartin/influenza_dvg_mccrone/ref/perth_2010_2012/perth_2010_2012.fasta
+##contig=<ID=CY121502.1,length=2316>
+##contig=<ID=CY121503.1,length=2309>
+##contig=<ID=CY121501.1,length=2208>
+##contig=<ID=CY121496.1,length=1732>
+##contig=<ID=CY121499.1,length=1541>
+##contig=<ID=CY121498.1,length=1443>
+##contig=<ID=CY121497.1,length=1003>
+##contig=<ID=CY121500.1,length=865>
+##ALT=<ID=*,Description="Represents allele(s) other than observed.">
+##INFO=<ID=INDEL,Number=0,Type=Flag,Description="Indicates that the variant is an INDEL.">
+##INFO=<ID=IDV,Number=1,Type=Integer,Description="Maximum number of reads supporting an indel">
+##INFO=<ID=IMF,Number=1,Type=Float,Description="Maximum fraction of reads supporting an indel">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Raw read depth">
+##INFO=<ID=VDB,Number=1,Type=Float,Description="Variant Distance Bias for filtering splice-site artefacts in RNA-seq data (bigger is better)",Version="3">
+##INFO=<ID=RPB,Number=1,Type=Float,Description="Mann-Whitney U test of Read Position Bias (bigger is better)">
+##INFO=<ID=MQB,Number=1,Type=Float,Description="Mann-Whitney U test of Mapping Quality Bias (bigger is better)">
+##INFO=<ID=BQB,Number=1,Type=Float,Description="Mann-Whitney U test of Base Quality Bias (bigger is better)">
+##INFO=<ID=MQSB,Number=1,Type=Float,Description="Mann-Whitney U test of Mapping Quality vs Strand Bias (bigger is better)">
+##INFO=<ID=SGB,Number=1,Type=Float,Description="Segregation based metric.">
+##INFO=<ID=MQ0F,Number=1,Type=Float,Description="Fraction of MQ0 reads (smaller is better)">
+##FORMAT=<ID=PL,Number=G,Type=Integer,Description="List of Phred-scaled genotype likelihoods">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##INFO=<ID=ICB,Number=1,Type=Float,Description="Inbreeding Coefficient Binomial test (bigger is better)">
+##INFO=<ID=HOB,Number=1,Type=Float,Description="Bias in the number of HOMs number (smaller is better)">
+##INFO=<ID=AC,Number=A,Type=Integer,Description="Allele count in genotypes for each ALT allele, in the same order as listed">
+##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of alleles in called genotypes">
+##INFO=<ID=DP4,Number=4,Type=Integer,Description="Number of high-quality ref-forward , ref-reverse, alt-forward and alt-reverse bases">
+##INFO=<ID=MQ,Number=1,Type=Integer,Description="Average mapping quality">
+##bcftools_callVersion=1.8+htslib-1.8
+##bcftools_callCommand=call -mv --threads 4 -Ov; Date=Tue Jan  9 00:09:35 2024
+##bcftools_normVersion=1.8+htslib-1.8
+##bcftools_normCommand=norm -m- -Ov -o SRR6121341_qualtrim_paired_iav.vcf; Date=Tue Jan  9 00:11:05 2024
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SRR6121341_qualtrim_paired_iav.bam
+CY121502.1	456	.	A	G	228	.	DP=984;VDB=1;SGB=-0.693147;RPB=0.289123;MQB=0.9101;MQSB=0.936551;BQB=0.778579;MQ0F=0;AC=2;AN=2;DP4=2,0,645,256;MQ=41	GT:PL	1/1:255,255,0
+CY121502.1	768	.	G	A	225	.	DP=999;VDB=7.63099e-19;SGB=-0.693147;MQ0F=0;AC=2;AN=2;DP4=0,0,980,0;MQ=41	GT:PL	1/1:255,255,0
+CY121502.1	995	.	A	G	225	.	DP=999;VDB=3.62886e-14;SGB=-0.693147;MQ0F=0;AC=2;AN=2;DP4=0,0,988,0;MQ=41	GT:PL	1/1:255,255,0
+CY121502.1	1537	.	T	C	225	.	DP=996;VDB=1.13576e-11;SGB=-0.693147;MQ0F=0;AC=2;AN=2;DP4=0,0,962,0;MQ=41	GT:PL	1/1:255,255,0
+CY121503.1	355	.	T	G	225	.	DP=1000;VDB=3.74147e-43;SGB=-0.693147;MQ0F=0;AC=2;AN=2;DP4=0,0,978,0;MQ=41	GT:PL	1/1:255,255,0
+CY121503.1	1018	.	G	A	228	.	DP=973;VDB=0.999914;SGB=-0.693147;RPB=0.375186;MQB=0.953317;MQSB=0.665888;BQB=0.632699;MQ0F=0;AC=2;AN=2;DP4=3,0,853,2;MQ=40	GT:PL	1/1:255,255,0
+CY121503.1	1081	.	A	G	228	.	DP=1000;VDB=1.40449e-33;SGB=-0.693147;RPB=0.882048;MQB=0.946917;BQB=0.637937;MQ0F=0;AC=2;AN=2;DP4=3,0,982,0;MQ=40	GT:PL	1/1:255,255,0
+CY121503.1	1718	.	G	A	228	.	DP=1000;VDB=3.4775e-25;SGB=-0.693147;RPB=1;MQB=1;MQSB=1;BQB=1;MQ0F=0;AC=2;AN=2;DP4=1,0,989,1;MQ=39	GT:PL	1/1:255,255,0
+CY121503.1	1774	.	C	T	228	.	DP=983;VDB=1;SGB=-0.693147;RPB=0.314274;MQB=0.329796;MQSB=1;BQB=0.617781;MQ0F=0;AC=2;AN=2;DP4=5,0,891,1;MQ=39	GT:PL	1/1:255,255,0
+CY121501.1	223	.	C	T	225	.	DP=1000;VDB=2.00874e-30;SGB=-0.693147;MQSB=0.907752;MQ0F=0;AC=2;AN=2;DP4=0,0,958,36;MQ=41	GT:PL	1/1:255,255,0
+CY121501.1	378	.	G	A	228	.	DP=998;VDB=9.264e-26;SGB=-0.693147;RPB=1;MQB=1;MQSB=0.917638;BQB=1;MQ0F=0;AC=2;AN=2;DP4=1,0,845,138;MQ=41	GT:PL	1/1:255,255,0
+CY121501.1	789	.	T	C	225	.	DP=989;VDB=1;SGB=-0.693147;MQ0F=0;AC=2;AN=2;DP4=0,0,874,0;MQ=41	GT:PL	1/1:255,255,0
+CY121501.1	975	.	T	C	225	.	DP=1000;VDB=7.28779e-18;SGB=-0.693147;MQ0F=0;AC=2;AN=2;DP4=0,0,991,0;MQ=41	GT:PL	1/1:255,255,0
+CY121501.1	1238	.	G	A	225	.	DP=999;VDB=6.56521e-19;SGB=-0.693147;MQ0F=0;AC=2;AN=2;DP4=0,0,970,0;MQ=38	GT:PL	1/1:255,255,0
+CY121501.1	1274	.	T	C	228	.	DP=991;VDB=7.3902e-07;SGB=-0.693147;RPB=0.735782;MQB=0.0358038;BQB=0.851653;MQ0F=0;AC=2;AN=2;DP4=3,0,935,0;MQ=38	GT:PL	1/1:255,255,0
+CY121501.1	1599	.	C	T	228	.	DP=1000;VDB=2.36688e-13;SGB=-0.693147;RPB=0.80255;MQB=0.143523;MQSB=2.32519e-11;BQB=0.818099;MQ0F=0;AC=2;AN=2;DP4=3,0,942,36;MQ=34	GT:PL	1/1:255,255,0
+CY121501.1	1644	.	G	A	228	.	DP=995;VDB=1.84458e-10;SGB=-0.693147;RPB=1;MQB=1;MQSB=3.44436e-10;BQB=1;MQ0F=0;AC=2;AN=2;DP4=1,0,881,40;MQ=33	GT:PL	1/1:255,255,0
+CY121501.1	1692	.	G	A	225	.	DP=994;VDB=1;SGB=-0.693147;MQSB=9.03247e-13;MQ0F=0;AC=2;AN=2;DP4=0,0,924,37;MQ=35	GT:PL	1/1:255,255,0
+CY121501.1	2163	.	A	G	228	.	DP=628;VDB=0;SGB=-0.693147;RPB=1;MQB=1;MQSB=0.973652;BQB=1;MQ0F=0;AC=2;AN=2;DP4=1,0,385,217;MQ=41	GT:PL	1/1:255,255,0
+CY121496.1	530	.	A	C	225	.	DP=992;VDB=0.274209;SGB=-0.693147;MQ0F=0;AC=2;AN=2;DP4=0,0,924,0;MQ=41	GT:PL	1/1:255,255,0
+CY121496.1	619	.	T	G	225	.	DP=999;VDB=3.09855e-27;SGB=-0.693147;MQ0F=0;AC=2;AN=2;DP4=0,0,988,0;MQ=41	GT:PL	1/1:255,255,0
+CY121496.1	718	.	A	C	225	.	DP=1000;VDB=6.6285e-24;SGB=-0.693147;MQSB=0.913439;MQ0F=0;AC=2;AN=2;DP4=0,0,985,3;MQ=41	GT:PL	1/1:255,255,0
+CY121496.1	1175	.	G	A	228	.	DP=976;VDB=1;SGB=-0.693147;RPB=0.925267;MQB=0.195287;BQB=0.623422;MQ0F=0;AC=2;AN=2;DP4=4,0,883,0;MQ=40	GT:PL	1/1:255,255,0
+CY121496.1	1220	.	G	A	225	.	DP=998;VDB=1.25761e-19;SGB=-0.693147;MQ0F=0;AC=2;AN=2;DP4=0,0,982,0;MQ=40	GT:PL	1/1:255,255,0
+CY121499.1	68	.	G	A	225	.	DP=1005;VDB=5.05054e-31;SGB=-0.693147;MQSB=0.186474;MQ0F=0;AC=2;AN=2;DP4=0,0,733,261;MQ=41	GT:PL	1/1:255,255,0
+CY121499.1	338	.	A	G	225	.	DP=1000;VDB=1.84327e-24;SGB=-0.693147;MQ0F=0;AC=2;AN=2;DP4=0,0,991,0;MQ=41	GT:PL	1/1:255,255,0
+CY121499.1	542	.	G	A	228	.	DP=989;VDB=1;SGB=-0.693147;RPB=1;MQB=1;BQB=1;MQ0F=0;AC=2;AN=2;DP4=1,0,932,0;MQ=40	GT:PL	1/1:255,255,0
+CY121499.1	590	.	C	T	225	.	DP=998;VDB=1.37219e-20;SGB=-0.693147;MQ0F=0;AC=2;AN=2;DP4=0,0,977,0;MQ=40	GT:PL	1/1:255,255,0
+CY121499.1	1079	.	A	G	225	.	DP=999;VDB=4.78246e-13;SGB=-0.693147;MQ0F=0;AC=2;AN=2;DP4=0,0,965,0;MQ=41	GT:PL	1/1:255,255,0
+CY121498.1	7	.	A	G	194	.	DP=49;VDB=9.72565e-15;SGB=-0.692717;MQSB=0.976718;MQ0F=0;AC=2;AN=2;DP4=0,0,10,13;MQ=23	GT:PL	1/1:224,69,0
+CY121498.1	73	.	C	T	225	.	DP=1006;VDB=7.08788e-27;SGB=-0.693147;MQSB=0.147775;MQ0F=0;AC=2;AN=2;DP4=0,0,840,159;MQ=36	GT:PL	1/1:255,255,0
+CY121498.1	76	.	C	A	225	.	DP=1009;VDB=4.98064e-27;SGB=-0.693147;MQSB=0.172264;MQ0F=0;AC=2;AN=2;DP4=0,0,843,159;MQ=36	GT:PL	1/1:255,255,0
+CY121498.1	636	.	G	A	228	.	DP=995;VDB=2.93291e-26;SGB=-0.693147;RPB=1;MQB=1;BQB=1;MQ0F=0;AC=2;AN=2;DP4=1,0,965,0;MQ=37	GT:PL	1/1:255,255,0
+CY121498.1	655	.	T	C	225	.	DP=983;VDB=4.15878e-16;SGB=-0.693147;MQ0F=0;AC=2;AN=2;DP4=0,0,939,0;MQ=37	GT:PL	1/1:255,255,0
+CY121498.1	712	.	A	G	225	.	DP=998;VDB=3.01085e-15;SGB=-0.693147;MQSB=0.0752859;MQ0F=0;AC=2;AN=2;DP4=0,0,951,42;MQ=39	GT:PL	1/1:255,255,0
+CY121498.1	998	.	A	G	225	.	DP=1000;VDB=2.27515e-22;SGB=-0.693147;MQ0F=0;AC=2;AN=2;DP4=0,0,974,0;MQ=38	GT:PL	1/1:255,255,0
+CY121498.1	1000	.	C	A	225	.	DP=1000;VDB=5.21181e-22;SGB=-0.693147;MQ0F=0;AC=2;AN=2;DP4=0,0,972,0;MQ=38	GT:PL	1/1:255,255,0
+CY121497.1	625	.	G	A	228	.	DP=998;VDB=5.53971e-32;SGB=-0.693147;RPB=1;MQB=1;BQB=1;MQ0F=0;AC=2;AN=2;DP4=1,0,966,0;MQ=41	GT:PL	1/1:255,255,0
+CY121500.1	189	.	C	T	228	.	DP=980;VDB=1;SGB=-0.693147;RPB=1;MQB=1;MQSB=0.800426;BQB=1;MQ0F=0;AC=2;AN=2;DP4=1,0,821,35;MQ=41	GT:PL	1/1:255,255,0

@@ -1,101 +1,191 @@
-import glob 
+import argparse
 import pandas as pd
 import numpy as np
-import argparse
-import matplotlib as mpl
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
+from matplotlib import gridspec
+import string
+import glob
+from scipy.stats import kruskal
+from collections import defaultdict
 try: 
-	from utils import plot_style
+	from utils import plot_style, jitter_boxplot, import_seqs
 except:
-	from scripts.utils import plot_style
+	from scripts.utils import plot_style, jitter_boxplot, import_seqs
+
+
+def consensus_fuzz(del_start, del_stop, ref_seq):
+		# start and stop are 1-indexed
+		# adjust start and stop
+		del_start -= 1
+		del_stop -= 1
+		# start and stop represent the last non-deleted base on the 3' end
+		# and the first non-deleted base on the 5' end
+		# arange doesn't include end point so don't need +1 
+		# assumes junctions all pushed towards end of reference
+		# first, undeleted portion of the beginning of the genome
+		seg1 = ref_seq[:del_start+1]
+		# second, deleted nucleotides 
+		seg2 = ref_seq[del_start+1:del_stop]
+		go = True
+		fuzz = 0
+		while go == True:
+			if (seg1[-(fuzz+1):] == seg2[-(fuzz+1):]).all():
+				fuzz += 1
+			else:
+				go = False
+		return(fuzz)
+		
 
 
 def run():
 	parser = argparse.ArgumentParser()
 	# input files
-	parser.add_argument('--dat', default=None)
+	# NEE DTO ADD ALL RUNS AND LIB
 	parser.add_argument('--allRuns', default=None)
-	parser.add_argument('--mapDir', default=None)
-	parser.add_argument('--padSize', default=None, type=int)
+	parser.add_argument('--dat', default=None)
+	parser.add_argument('--fastaDir', default=None)
+	parser.add_argument('--nullPremature', default=None)
+	parser.add_argument('--padSize', default=0, type=int)
 	args = parser.parse_args()
-	segment_order = {'PB2': 0, 'PB1': 1, 'PA': 2, 'HA': 3, 
-		'NP': 4, 'NA': 5, 'M': 6, 'NS': 7}
+	#args.dat = 'output/parsed_dvgs_0.005_True_True_0_all.tsv'
+	#args.fastaDir = "*_output/consensus/*.fasta"
+	#args.nullPremature = "output/null_premature_stop.tsv"
 	#args.padSize = 210
-	#args.dat = 'output/parsed_dvgs_10_True_0_PB2_PB1_PA.tsv' 
-	#args.dat = 'output/parsed_dvgs_10_True_0_all.tsv' 
+	# read in reference data
+	ref_dict = defaultdict(lambda: np.nan)
+	fasta_files = glob.glob(args.fastaDir)
+	for idx, fasta in enumerate(fasta_files):
+		seqs_names, seqs = import_seqs(fasta)
+		ref_dict.update({i[0].split(' ')[0] + '_' + fasta_files[idx].split('/')[-1].split('_')[0]: \
+				np.array(list(i[1].upper())) for i in zip(seqs_names, seqs)})
 
-	#args.allRuns = 'data/all_runs.tsv'
-	#args.libs = ['HK', 'perth', 'vic']
-	#args.mapDir = "data/*_map.tsv"
-	#args.padSize = 210
-
-	# also get the maximum size for each segment
-	segment_dat = \
-		[pd.read_csv(i, sep='\t', index_col=0) for i in glob.glob(args.mapDir)]
-	segment_len = {i.index.name: max(i.index)-(args.padSize*2) for i in segment_dat}
-
-	# read in and process data
+	#read in data and remove pads
 	dat = pd.read_csv(args.dat, sep='\t')
-	dat['segment'] = dat['segment'].fillna("NA")
-	# adjust positions to account for pad
-	dat['mapped_start'] -= args.padSize
-	dat['mapped_stop'] -= args.padSize
 
-	all_runs = pd.read_csv(args.allRuns, sep='\t')
-	all_runs['lib'] = all_runs['lib'].apply(lambda k: ''.join([i for i in k.split('_')[0] if not i.isdigit()]))
-	all_runs = all_runs[(all_runs['type'] == 'clinical')]
-	all_runs['Collection_date'] = pd.to_datetime(all_runs['Collection_date'])
-	all_runs = all_runs[['SPECID', 'Collection_date']].drop_duplicates().\
-		sort_values(by="Collection_date").reset_index(drop=True)
-	specid_sort_dict = {i['SPECID']: idx for idx, i in all_runs.iterrows()}
-	n_per_page = 10
-	specid_page = {key: 
-		np.floor(value/n_per_page).astype(int) for key, value in specid_sort_dict.items()}
-	specid_page_order = {key: value%n_per_page for key, value in specid_sort_dict.items()}
-	# need to sort data by specid
+	# start and stop are inclusive of pad
+	# reference sequences include pad
+	dat['fuzz1'] = \
+		dat.apply(lambda g: consensus_fuzz(g.Start, g.Stop, ref_dict[g.Segment + '_' + g.Run_x]), axis=1)
+	dat['fuzz2'] = \
+		dat.apply(lambda g: 
+			consensus_fuzz(g.Start, g.Stop, ref_dict[g.Segment + '_' + g.Run_x]) if 
+				type(g.Run_y) == str else np.nan, axis=1)
+	dat['fuzz'] = dat[['fuzz1', 'fuzz2']].max(axis=1)
+
+	# get null
+	null_dvg = pd.read_csv(args.nullPremature, sep='\t')
+	null_dvg['fuzz1'] = \
+		null_dvg.apply(lambda g: consensus_fuzz(g.rstart, g.rstop, ref_dict[g.Segment + '_' + g.Run_x]), axis=1)
+
+	null_dvg['fuzz2'] = \
+		null_dvg.apply(lambda g: 
+			consensus_fuzz(g.rstart, g.rstop, ref_dict[g.Segment + '_' + g.Run_x]) if 
+				type(g.Run_y) == str else np.nan, axis=1)
+
+	null_dvg['fuzz'] = null_dvg[['fuzz1', 'fuzz2']].max(axis=1)
+	null_quantiles = null_dvg.groupby(['rep', 'fuzz']).size().reset_index().\
+		groupby('fuzz').\
+		apply(lambda k: np.quantile(k[0], [0, 0.025, 0.5, 0.975,1]))
+	null_quantiles = pd.DataFrame(null_quantiles.to_list(), 
+		index=null_quantiles.index, 
+		columns=['q0', 'q0.025', 'q0.5', 'q0.975','q1'])
+
+
+	fuzz_sum = dat.groupby('fuzz').size()
+	ufuzz = dat.groupby(['segment', 'mapped_start', 'mapped_stop', 'fuzz']).size().reset_index().\
+		rename(columns={0:'count'})
+	ufuzz_sum = ufuzz.groupby('fuzz').size()
+
+	pol_fuzz_sum = dat.query('(segment == "PB2" | segment == "PA" | segment == "PB1") & (Stop - Start >= 500)').\
+		groupby('fuzz').size()
+	pol_ufuzz = dat.query('(segment == "PB2" | segment == "PA" | segment == "PB1") & (Stop - Start >= 500)').\
+		groupby(['segment', 'mapped_start', 'mapped_stop', 'fuzz']).size().reset_index().\
+		rename(columns={0:'count'})
+	pol_ufuzz_sum = pol_ufuzz.groupby('fuzz').size()
 	
-	plot_style()
-	n_segs = dat['segment'].unique().shape[0]
-	# group by specid and for each plot junction
-	with PdfPages('figures/final/figure_s4.pdf') as pdf:
-		for page in set(specid_page.values()):
-			page_dat = dat[dat['Specid'].map(specid_page) == page]
-			#fig, axs = plt.subplots(n_per_page, n_segs,
-			#		figsize=(6.4*1.5, 4.8*4), constrained_layout=True)
-			fig = plt.figure(figsize=(6.4*1.75, 4.8*4), constrained_layout=True)
-			fig.suptitle(f'Figure S4 page {page+1}')
-			subfigs = fig.subfigures(nrows=n_per_page, ncols=1)
-			for page_order in range(n_per_page):
-				if (page)*n_per_page + page_order < all_runs.shape[0]:
-					group_dat = page_dat[page_dat['Specid'].map(specid_page_order) == page_order]
-					specid = [key for key, val in specid_page_order.items() if 
-						val == page_order and specid_page[key] == page][0]
-					# now also group by segment
-					subfig = subfigs[page_order]
-					# blank line for spacing
-					subfig.suptitle(f'\n{specid}')
-					axs = subfig.subplots(nrows=1, ncols=3)
-					for row_idx, row in group_dat.iterrows():
-						_ = axs[segment_order[row['segment']]].plot(
-							[row['mapped_start'], row['mapped_stop']], 
-							[1,0], color='#333333', lw=0.5)
-					for ax_idx, ax in enumerate(axs):
-						_ = [ax.spines[i].set_visible(False) for i in ['left', 'right']]
-						_ = ax.set_xlabel('position (nt)', size=mpl.rcParams['axes.titlesize'])
-						_ = ax.set_title(f'{[key for key, val in segment_order.items() if val == ax_idx][0]}')
-						_ = ax.set_yticks([])
-			pdf.savefig(fig)
-			plt.close()
+	r_ufuzz = null_dvg.\
+		groupby(['rep', 'segment', 'mapped_rstart', 'mapped_rstop', 'fuzz']).size().reset_index().\
+		rename(columns={0:'count'})
+	r_ufuzz_sum = r_ufuzz.groupby('fuzz').\
+		apply(lambda k: np.quantile(k['count'], [0, 0.025, 0.5, 0.975,1]))
 
-					
+	plot_style()
+
+
+	common = dat.\
+		groupby(['segment', 'mapped_start', 'mapped_stop', 'fuzz']).\
+		size().\
+		reset_index().\
+		sort_values(by=0, ascending=False).iloc[0,:].\
+		rename({0:'n'})
+	n = dat[['segment', 'mapped_start', 'mapped_stop', 'fuzz']].drop_duplicates().shape[0]
+	output = []
+	output.append(f'there are a total of {n} unique DVG species')
+	output.append(f'the most common DVG is {common.segment} {common.mapped_start - args.padSize}_{common.mapped_stop-args.padSize}')
+	output.append(f'which has a fuzz value of {common.fuzz} and a count of {common.n}')
+	others = dat.query('fuzz >= @common.fuzz').\
+		groupby(['segment', 'mapped_start', 'mapped_stop', 'fuzz']).\
+		size().\
+		reset_index().\
+		sort_values(by=0).\
+		rename(columns={0:'n'})
+	output.append('other DVGs with a fuzz >= most common DVG fuzz:')
+	for idx, i in others.iterrows():
+		output.append(f'{i.segment} {i.mapped_start - args.padSize}_{i.mapped_stop - args.padSize}, fuzz={i.fuzz}, n={i.n}')
+
+	with open('figures/final/figure_s4.txt', 'w') as fp:
+		for i in output:
+			fp.write(i+'\n')
+
+
+	rng = np.random.default_rng(seed=111)
+	fig, axs = plt.subplots(2,2,figsize=(6.4*2, 4.8*2), constrained_layout=True)
+	axs[0,0].bar(fuzz_sum.index, fuzz_sum, facecolor='#eaeaea', edgecolor='#333333', zorder=3, label='empirical')
+	axs[0,0].set_ylabel('DVG species', size=18)
+	axs[0,0].set_title('all segments', size=18)
+	axs[0,0].set_xlim(-0.75, fuzz_sum.index.max()+0.75)
+	axs[1,0].scatter(ufuzz.fuzz + rng.uniform(low = -0.25, high=0.25, size=ufuzz.shape[0]), 
+		ufuzz['count'], alpha=0.5, facecolor='none', edgecolor='#333333')
+
+
+	axs[1,0].set_ylabel('samples', size=18)
+	axs[1,0].set_xlim(-0.75, fuzz_sum.index.max()+0.75)
+	axs[1,0].set_xlabel('repeat length', size=18)
+
+	axs[0,1].bar(pol_fuzz_sum.index, pol_fuzz_sum, facecolor='#eaeaea', edgecolor='#333333', zorder=3, label='empirical')
+	axs[0,1].scatter(null_quantiles.index, null_quantiles['q0.5'], color='#333333', zorder=5, label='null')
+	axs[0,1].set_xlim(-0.75, fuzz_sum.index.max()+0.75)
+	for idx, i in null_quantiles.iterrows():
+		axs[0,1].plot([idx,idx],i[['q0.025', 'q0.975']].values, color='#333333', zorder=4)
+
+
+
+	axs[0,1].legend()
+	axs[0,1].set_ylabel('\n', size=18)
+
+	axs[0,1].set_title(r'polymerase, $\geq$500nt deletion', size=18)
+	axs[1,1].scatter(pol_ufuzz.fuzz + rng.uniform(low = -0.25, high=0.25, size=pol_ufuzz.shape[0]), 
+		pol_ufuzz['count'], alpha=0.5, facecolor='none', edgecolor='#333333')
+
+
+	axs[1,1].set_ylabel('\n', size=18)
+	axs[1,1].set_xlabel('repeat length', size=18)
+
+	axs[1,1].set_xlim(-0.75, fuzz_sum.index.max()+0.75)
+
+	x_pos = [-0.15, -0.17, -0.13, -0.1]
+	for ax_idx, ax in enumerate(axs.flatten()):
+		ax.text(x_pos[ax_idx], 1.0, 
+			string.ascii_uppercase[ax_idx], color='#333333', 
+			transform=ax.transAxes, size=16, fontweight='bold')
+
+	fig.suptitle('Figure S4')
+	fig.savefig('figures/final/figure_s4.pdf')
+	plt.close()
+
+
+
 
 if __name__ == "__main__":
     run()
-
-
-
-
-
-
 

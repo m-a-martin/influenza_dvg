@@ -76,8 +76,6 @@ def run():
 			init = lambda k: k[0] > 0,
 			persistent = lambda k: (k[0] > 0) & (k[1] > 0))
 
-
-	
 	
 	output = []
 	output.append(f'there is sequence data taken 1 day apart for ')

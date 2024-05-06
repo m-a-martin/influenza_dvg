@@ -186,6 +186,9 @@ def find_premature_stop(del_start, del_stop, cds, ref_seq):
     # genbank records always include stop codon:
     # https://www.ncbi.nlm.nih.gov/genbank/samplerecord/#:~:text=see%20alphabetical%20list).-,CDS,includes%20an%20amino%20acid%20translation.
     dvg_cds = [''.join(dvg_seq[i][:-3]) for i in cds.values()]
+    # remove CDS's where the entire thing is deleted and where the first nucleotide is deleted
+    # such that there is not stop codon
+    dvg_cds = [i for i in dvg_cds if len(i) > 0 and i[:3] == 'ATG']
     # chunk and join
     # turn into a set
     # only care about presenceof premature stop, not location
@@ -193,7 +196,6 @@ def find_premature_stop(del_start, del_stop, cds, ref_seq):
     stops = set(['TAA', 'TAG', 'TGA'])
     premature = any([len(i & stops) > 0 for i in dvg_seqs])
     return(premature)
-
 
 
 

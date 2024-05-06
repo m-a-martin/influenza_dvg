@@ -9,6 +9,7 @@ total relative dvg read support by day post symptom onset (mean [sd]):
 5 days: 2.07983497158313 [1.983933827660161]
 6 days: 0.3862473635226909 [0.4519389025583498]
 Kruskal-Wallis H-test for independent samples of the total relative read support per sample grouped by the number of days post symptom onset p value = 0.03285492794078119
+Mann-Whitney U test of the total realtive read support on Day 0 v. Day 3 p value = 0.002930048400750691
 median [sd] number of total relative DVG reads per sample for samples taken 6 days post onset = 0.0859762163793519 [0.4519389025583498]
 median [sd] number of total relative DVG reads per sample for samples taken <6 days post onset = 0.8822871043490524[3.9850796169334894]
  number of unique DVGs by day post symptom onset (mean [sd]):
@@ -22,6 +23,7 @@ median [sd] number of total relative DVG reads per sample for samples taken <6 d
 5 days: 74.0 [67.61656601750786]
 6 days: 28.666666666666668 [30.652170486860392]
 Kruskal-Wallis H-test for independent samples of the number of unique DVGs per sample grouped by the number of days post symptom onset p value = 0.06125931833908908
+Mann-Whitney U test of the number of unique DVGs on Day 0 v. Day 3 p value = 0.011762530776688275
 median [sd] number of unique DVGs per sample for samples taken 6 days post onset = 8.0 [30.652170486860392]
 median [sd] number of unique DVGs per sample for samples taken <6 days post onset = 35.0[81.6400038352561]
 number of longitudinal samples stratified by time between samples
@@ -39,8 +41,8 @@ logistic regression p value using t_0 relative read support as a predictor for p
 Dep. Variable:                 shared   No. Observations:                 1297
 Model:                          Logit   Df Residuals:                     1295
 Method:                           MLE   Df Model:                            1
-Date:                Fri, 16 Feb 2024   Pseudo R-squ.:                  0.1012
-Time:                        12:06:36   Log-Likelihood:                -707.42
+Date:                Sun, 05 May 2024   Pseudo R-squ.:                  0.1012
+Time:                        10:44:22   Log-Likelihood:                -707.42
 converged:                       True   LL-Null:                       -787.05
 Covariance Type:            nonrobust   LLR p-value:                 1.636e-36
 =======================================================================================
@@ -52,7 +54,9 @@ log10_rel_0_support     1.7786      0.153     11.632      0.000       1.479     
 chi2 test of independence p value comparing counts of persistent/non-persistent DVGs as a function of time between samples =  1.1133478883245581e-35
 model fit to the persistent of DVGs as a funciton of time between samples
 with the functional form r((1-p)^t) has paramters (r,p) of 
-[0.46312682 0.11096838]
+[0.46312562 0.37530467]
+one day later, persistent = 0.2893124130407826
+six days later, persistent = 0.027523798937913017
 the 99th percentile of observed relative read support is -0.33304101912694256 and it would be predicted to have a 0    0.852091
 dtype: float64 probability of persisting
 probability of persisting with log10 relative support of -2 and 0 is 0    0.229034

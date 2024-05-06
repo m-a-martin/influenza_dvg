@@ -8,6 +8,7 @@ import string
 from scipy.stats import kruskal
 from scipy.stats import binomtest
 from scipy.stats.contingency import chi2_contingency
+from scipy.stats import mannwhitneyu
 import statsmodels.formula.api as smf
 try: 
 	from utils import plot_style, jitter_boxplot
@@ -29,11 +30,9 @@ def run():
 	#args.allRuns = "data/all_runs.tsv"
 	#args.repEnrollID = '50319'
 	
-	# create an ordering of the specids, by sample date arbitrary
-	# first, subset run table to just samples we have
+	# create a mapping between specid and sampling date
 	all_runs = pd.read_csv(args.allRuns, sep='\t')
 	all_runs = all_runs[(all_runs['type'] == 'clinical')]
-
 	day_dict = {i['SPECID']:i['days_post_onset'] for 
 		idx,i in all_runs.iterrows()}
 
@@ -42,16 +41,18 @@ def run():
 	# map days post symptom onset onto dat
 	dat['days_post_onset'] = dat['Specid'].map(day_dict)
 
-	
 	output = []
 	# groupby and sum supporting reads 
+	# reindex to add in 0s 
 	day_dvg_support = dat.groupby(['Specid', 'days_post_onset'])['Rel_support'].sum().reindex(
 		pd.MultiIndex.from_frame(all_runs[['SPECID', 'days_post_onset']].\
 			drop_duplicates())).fillna(0.0).reset_index()
 	day_dvg_support_dict = {int(g): g_dat['Rel_support'].values for g, g_dat in 
-		day_dvg_support.groupby(['days_post_onset'])}
+		day_dvg_support.groupby('days_post_onset')}
 
 	day_dvg_support_p = kruskal(*list(day_dvg_support_dict.values()))
+	print(day_dvg_support_dict.keys())
+	mwu_support_d0_d3 = mannwhitneyu(day_dvg_support_dict[0], day_dvg_support_dict[3])
 	output.append('total relative dvg read support by day post symptom onset (mean [sd]):')
 	for key, value in day_dvg_support_dict.items():
 		output.append(f'{key} days: {value.mean()} [{value.std()}]')
@@ -60,6 +61,8 @@ def run():
 	output[-1] += ' of the total relative read support per sample'
 	output[-1] += ' grouped by the number of days post symptom onset'
 	output[-1] += f' p value = {day_dvg_support_p.pvalue}'
+	output.append('Mann-Whitney U test of the total realtive read support on Day 0 v. Day 3')
+	output[-1] += f' p value = {mwu_support_d0_d3.pvalue}'
 	output.append('median [sd] number of total relative DVG reads per sample')
 	output[-1] += ' for samples taken 6 days post onset = '
 	output[-1] += f'{np.median(day_dvg_support_dict[6])} [{np.std(day_dvg_support_dict[6])}]'
@@ -74,9 +77,10 @@ def run():
 			drop_duplicates())).fillna(0.0).reset_index()
 
 	day_dvg_count_dict = {int(g): g_dat[0].values for g, g_dat in 
-		day_dvg_count.groupby(['days_post_onset'])}
+		day_dvg_count.groupby('days_post_onset')}
 
 	day_dvg_count_p = kruskal(*list(day_dvg_count_dict.values()))
+	mwu_count_d0_d3 = mannwhitneyu(day_dvg_count_dict[0], day_dvg_count_dict[3])
 	output.append(' number of unique DVGs by day post symptom onset (mean [sd]):')
 	for key, value in day_dvg_count_dict.items():
 		output.append(f'{key} days: {value.mean()} [{value.std()}]')
@@ -85,6 +89,8 @@ def run():
 	output[-1] += ' of the number of unique DVGs per sample'
 	output[-1] += ' grouped by the number of days post symptom onset'
 	output[-1] += f' p value = {day_dvg_count_p.pvalue}'
+	output.append('Mann-Whitney U test of the number of unique DVGs on Day 0 v. Day 3')
+	output[-1] += f' p value = {mwu_count_d0_d3.pvalue}'
 	output.append('median [sd] number of unique DVGs per sample')
 	output[-1] += ' for samples taken 6 days post onset = '
 	output[-1] += f'{np.median(day_dvg_count_dict[6])} [{np.std(day_dvg_count_dict[6])}]'
@@ -168,8 +174,6 @@ def run():
 	output[-1] += ' for DVGs sampled 1 day appart'
 	output[-1] += f' {t_fit.pvalues["log10_rel_0_support"]}'
 	output.append(str(t_fit.summary()))
-	
-
 
 	# group by individual then calculate proportion that are shared between time points
 	t_span_dict = {g: g_dat['shared'] for 
@@ -196,7 +200,7 @@ def run():
 		sse = (delta**2).sum()
 		return(sse)
 
-	persistent_model = lambda t, p: p[0]*((1-p[1])**(t*4))
+	persistent_model = lambda t, p: p[0]*((1-p[1])**t)
 	from scipy.optimize import minimize
 	persistent_model_fit = minimize(calc_sse, (0.5, 0.5), 
 		(list(t_span_prop.index), [i[0] for i in t_span_prop.values], persistent_model))
@@ -204,6 +208,10 @@ def run():
 	output.append(f'model fit to the persistent of DVGs as a funciton of time between samples')
 	output.append(f'with the functional form r((1-p)^t) has paramters (r,p) of ')
 	output.append(f'{persistent_model_fit.x}')
+	output.append('one day later, persistent = ')
+	output[-1] += str(persistent_model_fit.x[0]*((1-persistent_model_fit.x[1])**1))
+	output.append('six days later, persistent = ')
+	output[-1] += str(persistent_model_fit.x[0]*((1-persistent_model_fit.x[1])**6))
 	# sort all DVGs by relative read support, get 99th percentile
 	rel_support_99th = np.log10(dat.sort_values(
 		by='Rel_support').iloc[

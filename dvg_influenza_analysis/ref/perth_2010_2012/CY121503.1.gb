@@ -1,0 +1,108 @@
+LOCUS       CY121503                2309 bp    cRNA    linear   VRL 20-JUN-2012
+DEFINITION  Influenza A virus (A/Perth/10/2010(H3N2)) polymerase PB2 (PB2)
+            gene, complete cds.
+ACCESSION   CY121503
+VERSION     CY121503.1
+KEYWORDS    .
+SOURCE      Influenza A virus (A/Perth/10/2010(H3N2))
+  ORGANISM  Influenza A virus (A/Perth/10/2010(H3N2))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 2309)
+  AUTHORS   Wentworth,D.E., Dugan,V., Halpin,R., Lin,X., Bera,J., Ghedin,E.,
+            Fedorova,N., Overton,L., Tsitrin,T., Stockwell,T., Amedeo,P.,
+            Bishop,B., Chen,H., Edworthy,P., Gupta,N., Katzel,D., Li,K.,
+            Schobel,S., Shrivastava,S., Thovarai,V., Wang,S., Ramanunninair,M.,
+            Silverman,J., Devis,R., Phan,L., Le,J., Pokorny,B.A., Onodera,S.,
+            Fulvini,A.A., He,Y., Kilbourne,E.D., Bucher,D., Bao,Y., Sanders,R.,
+            Dernovoy,D., Kiryutin,B., Lipman,D.J. and Tatusova,T.
+  TITLE     The NIAID Influenza Genome Sequencing Project
+  JOURNAL   Unpublished
+REFERENCE   2  (bases 1 to 2309)
+  CONSRTM   The NIAID Influenza Genome Sequencing Consortium
+  TITLE     Direct Submission
+  JOURNAL   Submitted (20-JUN-2012) on behalf of JCVI/New York Medical
+            College/NCBI, National Center for Biotechnology Information, NIH,
+            Bethesda, MD 20894, USA
+COMMENT     This work was supported by the National Institute of Allergy and
+            Infectious Diseases (NIAID), Genome Sequencing Centers for
+            Infectious Diseases (GSCID) program.
+FEATURES             Location/Qualifiers
+     source          1..2309
+                     /organism="Influenza A virus (A/Perth/10/2010(H3N2))"
+                     /mol_type="viral cRNA"
+                     /strain="A/Perth/10/2010"
+                     /serotype="H3N2"
+                     /host="Homo sapiens"
+                     /db_xref="taxon:1184599"
+                     /segment="1"
+                     /lab_host="Egg passage(s)"
+                     /country="Australia: Perth"
+                     /collection_date="2010"
+     misc_feature    1..2309
+                     /db_xref="IRD:NIGSP_BUCA_00057.PB2"
+     gene            14..2293
+                     /gene="PB2"
+     CDS             14..2293
+                     /gene="PB2"
+                     /codon_start=1
+                     /product="polymerase PB2"
+                     /protein_id="AFM72388.1"
+                     /translation="MERIKELRNLMSQSRTREILTKTTVDHMAIIKKYTSGRQEKNPS
+                     LRMKWMMAMKYPITADKRITEMVPERNEQGQTLWSKISDAGSDRVMVSPLAVTWWNRN
+                     GPVTSTVHYPKVYKTYFDKVERLKHGTFGPVHFRNQVKIRRRVDINPGHADLSAKEAQ
+                     DVIMEVVFPNEVGARILTSESQLTITKEKKEELRDCKISPLMVAYMLERELVRKTRFL
+                     PVSGGTSSIYIEVLHLTQGTCWEQMYTPGGGVRNDDIDQSLIIAARNIVRRAAVSADP
+                     LASLLEMCHSTQIGGTKMVDILRQNPTEEQAVDICKAAMGLRISSSFSFGGFTFKRTS
+                     GSSVKKEEEVLTGNLQTLKIRVHEGYEEFTMVGKRATAILRKATRRLVQLIVSGRDDQ
+                     SIAEAIIVAMVFSQEDCMIKAVRGDLNFVNRANQRLNPMHQLLRHFQKDAKVLFQNWG
+                     VEHIDSVMGMIGVLPDMTPSTEMSMRGIRVSKMGVDEYSSTERVVVSIDRFLRVRDQR
+                     GNVLLSPEEVSETQGTERLTITYSSSMMWEINGPESVLVNTYQWIIRNWEAIKIQWSQ
+                     NPAMLYNKMEFEPFQSLVPKAIRSQYSGFVRTLFQQMRDVLGTFDTTQIIKLLPFAAA
+                     PPKQSRMQFSSLTVNVRGSGMRILVRGNSPVFNYNKTTKRLTILGKDAGTLIEDPDES
+                     TSGVESAVLRGFLIIGKEDRRYGPALSINELSNLAKGEKANVLIGQGDVVLVMKRKRD
+                     SSILTDSQTATKRIRMAIN"
+ORIGIN      
+        1 aattatattc agtatggaaa gaataaaaga attacggaat ctgatgtcgc agtctcgcac
+       61 tcgcgagata ctgacaaaaa ccacagtgga ccatatggcc ataattaaga agtacacatc
+      121 ggggagacag gaaaagaacc cgtcacttag gatgaaatgg atgatggcaa tgaaataccc
+      181 aatcactgct gacaaaagga taacagaaat ggttccagag agaaatgaac aaggacaaac
+      241 tctatggagt aaaataagtg atgctggatc agatagagtg atggtatcac ctttggctgt
+      301 aacatggtgg aatagaaatg gacccgtgac aagtacggtc cattacccaa aagtttacaa
+      361 aacttatttc gacaaagtcg aaaggttaaa acatggaacc tttggccctg ttcattttag
+      421 aaatcaagtc aagatacgca gaagagtaga cataaatcct ggtcatgcag acctcagtgc
+      481 caaagaggca caagatgtaa ttatggaagt tgtttttccc aatgaagtgg gagccaggat
+      541 actaacatca gaatcacaat taacaataac taaagagaaa aaagaagaac tccgagattg
+      601 taaaatttct cccttgatgg ttgcatacat gttagagaga gaacttgtac gaaaaacaag
+      661 atttctccca gtttctggag gaacaagcag tatatacatt gaagttttac atttgactca
+      721 gggaacgtgt tgggaacaaa tgtacactcc aggtggagga gtgaggaatg acgatattga
+      781 ccaaagccta attattgcgg ccaggaacat agtaagaaga gccgcagtat cagcagatcc
+      841 actagcatct ttattggaaa tgtgccacag cacacaaatt ggcgggacaa agatggtgga
+      901 cattcttaga cagaacccga ctgaagaaca agctgtggat atatgcaagg ctgcaatggg
+      961 attgagaatc agctcatcat tcagctttgg tggatttaca tttaaaagaa caagcgggtc
+     1021 atcagtcaaa aaagaagaag aggtgcttac aggcaatctc caaacattga aaataagagt
+     1081 acatgagggg tatgaggagt tcacaatggt ggggaaaaga gcaacagcta tactaagaaa
+     1141 agcaaccaga agattggttc agctcatagt gagtggaaga gacgaccagt caatagccga
+     1201 agcaataatc gtggccatgg tgttttcaca agaggattgc atgataaaag cagttagagg
+     1261 tgacctgaat ttcgtcaaca gagcaaatca gcggttaaac cccatgcatc agcttttaag
+     1321 gcattttcag aaagatgcga aagtgctttt tcaaaattgg ggagttgaac acatcgacag
+     1381 tgtgatggga atgattggag tattaccaga tatgactcca agcacagaga tgtcaatgag
+     1441 aggaataaga gtcagcaaaa tgggtgtgga tgaatactcc agtacagaga gggtggtggt
+     1501 tagcattgat cggtttttga gagttcgaga ccaacgtggg aatgtattat tatctcctga
+     1561 ggaggtcagt gaaacacagg gaactgagag actgacaata acttattcat cgtcgatgat
+     1621 gtgggagatt aacggtcctg aatcggttct ggtcaatacc tatcagtgga tcatcagaaa
+     1681 ttgggaagct attaaaattc aatggtctca gaatcctgca atgttgtaca acaaaatgga
+     1741 atttgaacca tttcaatcct tagtccccaa ggccattaga agccaataca gtgggtttgt
+     1801 cagaactcta ttccaacaaa tgagagacgt acttgggaca tttgacacca cccagataat
+     1861 aaagcttctc ccttttgcag ctgctccacc aaagcaaagc agaatgcagt tctcttcact
+     1921 gactgtgaat gtgaggggat cagggatgag aatacttgta aggggcaatt ctcctgtatt
+     1981 caactacaac aagaccacta aaagactaac aattctcgga aaagatgccg gcactttaat
+     2041 tgaagaccca gatgaaagca catccggagt ggaatccgcc gtcttgagag ggtttctcat
+     2101 tataggtaag gaagacagaa gatacggacc agcattaagc atcaatgaac tgagcaacct
+     2161 tgcaaaaggg gaaaaggcta atgtgctaat agggcaagga gacgtggtgt tggtaatgaa
+     2221 acgaaaacgg gactctagca tacttactga cagccagaca gcgaccaaaa gaattcggat
+     2281 ggccatcaat taatgctgaa tagtttaaa
+//
+

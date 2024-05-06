@@ -1,0 +1,116 @@
+LOCUS       CY207737                2309 bp    cRNA    linear   VRL 10-OCT-2016
+DEFINITION  Influenza A virus (A/New York/WC-LVD-15-031/2015(H3N2)) polymerase
+            PB1 (PB1) and PB1-F2 protein (PB1-F2) genes, complete cds.
+ACCESSION   CY207737
+VERSION     CY207737.1
+DBLINK      BioProject: PRJNA183620
+KEYWORDS    .
+SOURCE      Influenza A virus (A/New York/WC-LVD-15-031/2015(H3N2))
+  ORGANISM  Influenza A virus (A/New York/WC-LVD-15-031/2015(H3N2))
+            Viruses; Riboviria; Orthornavirae; Negarnaviricota;
+            Polyploviricotina; Insthoviricetes; Articulavirales;
+            Orthomyxoviridae; Alphainfluenzavirus; Alphainfluenzavirus
+            influenzae.
+REFERENCE   1  (bases 1 to 2309)
+  AUTHORS   Shabman,R., Das,S.R., Shilts,M., Fedorova,N., Puri,V.,
+            Shrivastava,S., Amedeo,P., Williams,M., Hu,L., Durbin,A.,
+            Rocchi,I., Williams,T., Bao,Y., Sanders,R., Zhdanov,S.,
+            Kiryutin,B., Lipman,D.J., Tatusova,T. and St. George,K.
+  TITLE     The NIAID Influenza Genome Sequencing Project
+  JOURNAL   Unpublished
+REFERENCE   2  (bases 1 to 2309)
+  CONSRTM   The NIAID Influenza Genome Sequencing Consortium
+  TITLE     Direct Submission
+  JOURNAL   Submitted (10-OCT-2016) on behalf of JCVI/Wadsworth Center/NCBI,
+            National Center for Biotechnology Information, NIH, Bethesda, MD
+            20894, USA
+COMMENT     This work was supported by the National Institute of Allergy and
+            Infectious Diseases (NIAID), Genome Sequencing Centers for
+            Infectious Diseases (GSCID) program.
+FEATURES             Location/Qualifiers
+     source          1..2309
+                     /organism="Influenza A virus (A/New
+                     York/WC-LVD-15-031/2015(H3N2))"
+                     /mol_type="viral cRNA"
+                     /strain="A/New York/WC-LVD-15-031/2015"
+                     /serotype="H3N2"
+                     /host="human; gender Unknown; age 96 years"
+                     /db_xref="taxon:1895544"
+                     /segment="2"
+                     /lab_host="Original specimen passage(s)"
+                     /country="USA: Niagara County, New York"
+                     /collection_date="11-Feb-2015"
+     misc_feature    1..2309
+                     /db_xref="IRD:NIGSP_SGA4_00062.PB1"
+     gene            8..2281
+                     /gene="PB1"
+     CDS             8..2281
+                     /gene="PB1"
+                     /codon_start=1
+                     /product="polymerase PB1"
+                     /protein_id="AOV83064.1"
+                     /translation="MDVNPTLLFLKVPAQNAISTTFPYTGDPPYSHGTGTGYTMDTVN
+                     RTHQYSERGKWTTNTETGAPQLNPIDGPLPEDNEPSGYAQTDCVLEAMAFLEESHPGI
+                     FENSCLETMEAVQQTRVDKLTQGRQTYDWTLNRNQPAATALANTIEVFRSNGLTANES
+                     GRLIDFLKDVMESMDKEEMEITTHFQRKRRVRDNMTKKMVTQRTIGKKKQRVNKRGYL
+                     IRALTLNTMTKDAERGKLKRRAIATPGMQIRGFVYFVETLARSICEKLEQSGLPVGGN
+                     EKKAKLANVVRKMMTNSQDTELSFTITGDNTKWNENQNPRMFLAMITYITKNQPEWFR
+                     NILSIAPIMFSNKMARLGKGYMFESKRMKLRTQIPAEMLASIDLKYFNESTRKKIEKI
+                     RPLLIDGTASLSPGMMMGMFNMLSTVLGVSILNLGQKKYTKTTYWWDGLQSSDDFALI
+                     VNAPNHEGIQAGVDRFYRTCKLVGINMSKKKSYINKTGTFEFTSFFYRYGFVANFSME
+                     LPSFGVSGINESADMSIGVTVIKNNMINNDLGPATAQMALQLFIKDYRYTYRCHRGDT
+                     QIQTRRSFEIKKLWDQTQSRTGLLVSDGGPNLYNIRNLHIPEVCLKWELMDENYRGRL
+                     CNPLNPFVSHKEIESVNNAVVMPAHGPAKSMEYDAVATTHSWIPKRNRSILNTSQRGI
+                     LEDEQMYQKCCNLFEKFFPSSSYRRPIGISSMVEAMVSRARIDARIDFESGRIKKEEF
+                     SEIMKICSTIEELRRQK"
+     gene            102..374
+                     /gene="PB1-F2"
+     CDS             102..374
+                     /gene="PB1-F2"
+                     /codon_start=1
+                     /product="PB1-F2 protein"
+                     /protein_id="AOV83065.1"
+                     /translation="MEQGQGTLWTQSTEHTNTQRGGSGRQIQKLGRPSSTQLMDHYLR
+                     IMNQVDMHKQTVSWRLWPSLKNPTQVSLRTHALKQWKPFNRQGWTN"
+ORIGIN      
+        1 catttgaatg gatgtcaatc cgactctact gttcttaaaa gttccagcgc aaaatgccat
+       61 aagcacaaca ttcccttata ctggagatcc tccatacagc catggaacag ggacagggta
+      121 cactatggac acagtcaaca gaacacacca atactcagag agggggaagt ggacgacaaa
+      181 tacagaaact ggggcgcccc agctcaaccc aattgatgga ccactacctg aggataatga
+      241 accaagtgga tatgcacaaa cagactgtgt cctggaggct atggccttcc ttgaagaatc
+      301 ccacccaggt atctttgaga actcatgcct tgaaacaatg gaagccgttc aacagacaag
+      361 ggtggacaaa ctaacccaag gtcgccagac ttatgattgg acattaaaca ggaaccaacc
+      421 ggcagcaact gcattagcca acaccataga agtctttaga tcgaacggat taacagctaa
+      481 tgaatcagga aggctaatag atttcctcaa ggatgtgatg gaatcaatgg ataaagagga
+      541 aatggagata acaacacact ttcaaagaaa aaggagagta agggacaaca tgaccaagaa
+      601 aatggtcaca caaagaacaa tagggaagaa aaaacaaaga gtgaataaga gaggctacct
+      661 aataagagct ttgacattga acacgatgac caaagatgca gagagaggca aattaaaaag
+      721 aagggctatt gcaacacccg ggatgcaaat tagagggttc gtgtacttcg ttgaaacttt
+      781 agctagaagc atttgcgaaa agcttgaaca atctggactt ccggttgggg gtaatgaaaa
+      841 gaaggccaaa ctggcaaatg ttgtgagaaa aatgatgact aattcacaag acacagagct
+      901 ttctttcaca atcactgggg acaacactaa gtggaatgaa aatcaaaacc cccgaatgtt
+      961 tttggcgatg attacataca tcacaaagaa tcaacctgaa tggttcagaa acatcctgag
+     1021 catcgcacca ataatgttct caaacaaaat ggcaagactg ggaaaaggat acatgttcga
+     1081 gagtaagaga atgaagctcc ggacacaaat acctgcagaa atgctagcaa gcattgacct
+     1141 gaagtatttc aatgaatcaa caaggaagaa aattgagaaa ataaggcctc ttctaataga
+     1201 tggcacagca tcattgagcc ctggaatgat gatgggcatg ttcaacatgc taagtacagt
+     1261 tttaggagtc tcaatactga atcttggaca aaagaaatac accaagacaa catactggtg
+     1321 ggatgggctc caatcttcag acgattttgc cctcatagtg aatgcaccaa atcatgaggg
+     1381 aatacaagca ggagttgata gattctatag gacctgcaag ttagtgggaa tcaacatgag
+     1441 caaaaagaag tcctatataa ataaaacagg gacatttgaa ttcactagct ttttttatcg
+     1501 atatggattt gtggctaatt ttagcatgga gctgccaagt tttggagtgt ctggaataaa
+     1561 cgagtcagct gacatgagca ttggagtaac agtgataaag aacaacatga taaataatga
+     1621 ccttggacca gcaacagccc aaatggctct ccaattgttc atcaaagatt acagatacac
+     1681 atatcggtgc catagaggag acacacaaat ccaaacgaga agatcattcg agataaagaa
+     1741 gctgtgggat caaacccaat caaggacagg actattggta tcagatgggg gaccaaactt
+     1801 atacaatatc cggaatcttc atatccctga agtctgctta aagtgggagc tgatggatga
+     1861 gaattatcgg ggaagacttt gtaatcccct gaatcccttt gtcagccata aagaaattga
+     1921 atctgtaaac aatgctgtag taatgccagc ccatggtccg gccaaaagta tggaatatga
+     1981 tgccgttgca actacacact cctggattcc caaaaggaac cgctctattc taaacacaag
+     2041 ccaaagggga attcttgagg atgaacagat gtaccagaag tgctgcaact tgttcgagaa
+     2101 atttttccct agtagttcat ataggagacc gattggaatt tctagcatgg tggaggccat
+     2161 ggtgtctagg gcccggattg atgccagaat tgacttcgag tctggaagga ttaagaagga
+     2221 agagttctct gagatcatga agatctgttc caccattgaa gaactcagac ggcaaaaata
+     2281 atgaatttag cttgtccttc atgaaaaaa
+//
+

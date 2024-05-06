@@ -1,3 +1,19 @@
-mann whitney u test comparing relative DVG read support of PB2 DVGs with premature stop codons to those without : statistic=1731881.5; pvalue=0.42013151467859955
-mann whitney u test comparing relative DVG read support of PB1 DVGs with premature stop codons to those without : statistic=659354.5; pvalue=0.056691621609436
-mann whitney u test comparing relative DVG read support of PA DVGs with premature stop codons to those without : statistic=5259551.0; pvalue=0.7424312972541245
+mann whitney u test comparing relative DVG read support of PB2 DVGs with mod == 0 to those with mod > 0 : statistic=1708168.0; pvalue=0.6596246192205626
+mann whitney u test comparing relative DVG read support of PB1 DVGs with mod == 0 to those with mod > 0 : statistic=606220.5; pvalue=0.08794044541627909
+mann whitney u test comparing relative DVG read support of PA DVGs with mod == 0 to those with mod > 0 : statistic=5412790.0; pvalue=0.5446038005580822
+        mod = 0   mod = 1   mod = 2 segment
+q0     0.313815  0.344166  0.278740      PA
+q2.5   0.323837  0.356049  0.287330      PA
+q50    0.334860  0.367215  0.297924      PA
+q97.5  0.345884  0.378525  0.308518      PA
+q1     0.356478  0.387545  0.319256      PA
+q0     0.252679  0.385820  0.257214     PB1
+q2.5   0.267519  0.400247  0.275763     PB1
+q50    0.285655  0.420445  0.293899     PB1
+q97.5  0.303792  0.440643  0.312036     PB1
+q1     0.324815  0.457955  0.326463     PB1
+q0     0.340648  0.313345  0.259760     PB2
+q2.5   0.355697  0.327379  0.273029     PB2
+q50    0.370758  0.341924  0.287318     PB2
+q97.5  0.386068  0.356724  0.301352     PB2
+q1     0.399592  0.371013  0.315387     PB2

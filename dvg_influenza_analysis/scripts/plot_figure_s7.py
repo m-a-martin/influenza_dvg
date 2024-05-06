@@ -2,13 +2,12 @@ import argparse
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 import string
-import statsmodels.formula.api as smf
 try: 
 	from utils import plot_style
 except:
 	from scripts.utils import plot_style
-
 
 def run():
 	parser = argparse.ArgumentParser()
@@ -16,14 +15,21 @@ def run():
 	# NEE DTO ADD ALL RUNS AND LIB
 	parser.add_argument('--allRuns', default=None)
 	parser.add_argument('--dat', default=None)
+	parser.add_argument('--mapDir', default=None)
+	parser.add_argument('--minTspan', default=-np.inf, type=float)
+	parser.add_argument('--padSize', default=None, type=int)
 	args = parser.parse_args()
+	segment_order = {'PB2': 0, 'PB1': 1, 'PA': 2, 'HA': 3, 
+		'NP': 4, 'NA': 5, 'M': 6, 'NS': 7}
 	#args.dat = 'output/parsed_dvgs_10_True_True_500_PB2_PB1_PA.tsv'
 	#args.allRuns = "data/all_runs.tsv"
-
+	#args.repEnrollID = '50538'
 	# create an ordering of the specids, by sample date arbitrary
 	# first, subset run table to just samples we have
 	all_runs = pd.read_csv(args.allRuns, sep='\t')
 	all_runs = all_runs[(all_runs['type'] == 'clinical')]
+	all_runs['Collection_date'] = pd.to_datetime(all_runs['Collection_date'])
+	all_runs = all_runs.sort_values(by='Collection_date')
 
 	day_dict = {i['SPECID']:i['days_post_onset'] for 
 		idx,i in all_runs.iterrows()}
@@ -35,10 +41,14 @@ def run():
 
 	# get longitudinal data
 	# only get rows from longitudinal data
-	uniq_enrollids = \
-		np.unique(dat[['Specid', 'enrollid']].drop_duplicates()['enrollid'].values, return_counts=True)
-
-	keep_enrollids = uniq_enrollids[0][uniq_enrollids[1] > 1]
+	keep_enrollids = dat[['Specid', 'enrollid', 'days_post_onset']].\
+		groupby(['enrollid']).\
+		filter(lambda k: 
+			len(set(k.Specid)) > 1).\
+		groupby(['enrollid']).\
+		filter(lambda k:  
+			(max(k.days_post_onset) - min(k.days_post_onset)) >= args.minTspan)\
+		['enrollid'].drop_duplicates()
 	# based on this file
 	# we assume that "HS" specids are household sampls
 	# and "MH" specids are clinic samples
@@ -56,99 +66,71 @@ def run():
 		long_dat[['enrollid', 'within_host_order', 'days_post_onset']].drop_duplicates().pivot(
 			index=['enrollid'], columns='within_host_order', 
 			values='days_post_onset').apply(
-			lambda k: k[1] - k[0], axis=1).iteritems()}
+			lambda k: k[1] - k[0], axis=1).items()}
 	long_dat['tspan'] = long_dat['enrollid'].map(tspan_dict)
 
-	# pivot long dat
-	# we want a dataframe 
-	# that pivots DVGs based on their enrollid, subject, start, stop,
-	# then support t0 and support t1
-	grouped_dat = long_dat[['enrollid', 'within_host_order', 'tspan',
-		'segment', 'Start', 'Stop', 'Rel_support']].pivot(
-			index=['enrollid', 'tspan', 'segment', 'Start', 'Stop'], 
-			columns='within_host_order', 
-			values='Rel_support').fillna(0)
-	grouped_t0_dat = grouped_dat[grouped_dat[0] > 0]
-	grouped_t0_dat['shared'] = 1*(grouped_t0_dat[1] > 0)
+	long_specid = all_runs[all_runs['Isolate'].astype(int).isin(
+		long_dat['enrollid'])]['Isolate'].drop_duplicates().reset_index()
 
+	specid_sort_dict = {i['Isolate']: idx for idx, i in long_specid.iterrows()}
 
-	# multivariate regression
-	grouped_t0_dat = grouped_t0_dat.reset_index().rename(
-			columns={0: 'rel_0_support'}).assign(
-			log10_rel_0_support = lambda k: np.log10(k.rel_0_support))
-	t_fit = smf.logit("shared ~ log10_rel_0_support + C(tspan)", 
-		data=grouped_t0_dat).fit()
+	n_per_page = 5
+	specid_page = {key: 
+		np.floor(value/n_per_page).astype(int) for key, value in specid_sort_dict.items()}
+	specid_page_order = {key: value%n_per_page for key, value in specid_sort_dict.items()}
 
-	x_vals = np.linspace(grouped_t0_dat.log10_rel_0_support.min(), grouped_t0_dat.log10_rel_0_support.max(), num=50)
-	t_span_predict = {tspan: t_fit.predict(pd.DataFrame(np.vstack([x_vals,
-			np.repeat(tspan, 50)]).T, 
-			columns=['log10_rel_0_support', 'tspan'])) for tspan in 
-		np.sort(grouped_t0_dat['tspan'].unique())}
-
+	within_host_order_dict = {idx: i.astype(int).astype(str) for idx, i in long_dat[['enrollid', 
+		'within_host_order', 'days_post_onset']].drop_duplicates().pivot(index='enrollid', 
+			columns='within_host_order', values='days_post_onset').iterrows()}
+	# pivot the long dat
+	long_dat = long_dat.pivot(index=['enrollid', 'segment', 'Start', 'Stop'],
+		columns=['within_host_order'],
+		values='Rel_support').fillna(0).reset_index()
 	output = []
-	counts = grouped_t0_dat[['enrollid', 'tspan']].drop_duplicates().groupby('tspan').size()
-	for row_idx, row in enumerate(counts):
-		output.append(f'longitudinal data available for {row} individuals sampled {counts.index[row_idx]} day apart')
-	output.append(str(t_fit.summary()))
-	output.append(str(t_fit.predict(pd.DataFrame([[1E-3, 0], 
-		[-3, 1],
-		[-3, 2],
-		[-3, 3],
-		[-3, 4],
-		[-3, 6],
-		[-4, 3],
-		[-3, 3],
-		[-2, 3]], columns=['log10_rel_0_support', 'tspan']))))
+	output.append(f'longitudinal data with a tspan of at least {args.minTspan} is available for ')
+	output[-1] += f'{long_dat.enrollid.drop_duplicates().shape[0]} individuals'
 
 	with open('figures/final/figure_s7.txt', 'w') as fp:
-			for line in output:
-				fp.write(line+'\n')
+		for line in output:
+			fp.write(line+'\n')
 
-	n_cols =3
-	n_rows = int(np.ceil(len(t_span_predict.keys())/n_cols))
 	plot_style()
-	fig, axs = plt.subplots(n_rows, n_cols, 
-		figsize=(6.4*n_cols, 4.8*n_rows),
-		constrained_layout=True)
-
-	for idx, (key, val) in enumerate(t_span_predict.items()):
-		key_dat = grouped_t0_dat[grouped_t0_dat['tspan'] == key]
-		key_dat_dict = {t: t_dat['log10_rel_0_support'] for t, t_dat in key_dat.groupby('shared')}
-		#axs.flatten()[idx].boxplot(key_dat_dict.values(), 
-		#	positions=list(key_dat_dict.keys()), 
-		#	vert=False, 
-		#	flierprops=dict(markeredgecolor='#333333'),
-		#			medianprops=dict(color='steelblue'),
-		#			zorder=4)
-		#axs.flatten()[idx] = jitter_boxplot(ax=axs.flatten()[idx],
-		#	i=list(key_dat_dict.keys()),
-		#	d=key_dat_dict.values(),
-		#	j=0.25,
-		#	vert=False)
-		x = key_dat.log10_rel_0_support.values
-		y = key_dat.shared.values
-		#	np.repeat(1, list(grouped_t0_dat_tspan1_dict.values())[1].shape[0])])
-		rng = np.random.default_rng(seed=111)
-		y = y + rng.uniform(low = -0.25/2, high=0.25/2, size=y.shape[0])
-		axs.flatten()[idx].scatter(x,y,edgecolor='#333333', facecolor="None", marker='o', zorder=4, alpha=0.5)
-		axs.flatten()[idx].set_yticks([0,1])
-		axs.flatten()[idx].set_yticklabels(['NP', 'P'])
-		secax = axs.flatten()[idx].secondary_yaxis('right')
-		secax.set_ylabel(r'$P($'+'persistent'+r'$)$', size=mpl.rcParams['axes.titlesize'])
-		secax.set_yticks([0, 0.25, 0.5, 0.75, 1])
-		axs.flatten()[idx].plot(x_vals, val, color='#333333', zorder=3)
-		axs.flatten()[idx].set_xlabel('relative read support', size=mpl.rcParams['axes.titlesize'])
-		axs.flatten()[idx].grid(color='#eaeaea', zorder=0)
-		axs.flatten()[idx].set_title(f'\n{int(key)} day{"s" if int(key) != 1 else ""} between samples')
-
-
-	for ax_idx, ax in enumerate(axs.flatten()):
-				ax.text(-0.1, 1.0, 
-					string.ascii_uppercase[ax_idx], color='#333333', 
-					transform=ax.transAxes, size=16, fontweight='bold')
-	fig.suptitle('Figure S7')
-	fig.savefig('figures/final/figure_s7.pdf')
-	plt.close()
+	with PdfPages('figures/final/figure_s7.pdf') as pdf:
+		for page in set(specid_page.values()):
+			page_dat = long_dat[long_dat['enrollid'].astype(str).map(specid_page) == page]
+			#fig, axs = plt.subplots(n_per_page, n_segs,
+			#		figsize=(6.4*1.5, 4.8*4), constrained_layout=True)
+			fig = plt.figure(figsize=(6.4*2, 4.8*3), constrained_layout=True)
+			fig.suptitle(f'Figure S7 page {page+1}')
+			subfigs = fig.subfigures(nrows=n_per_page, ncols=1)
+			for page_order in range(n_per_page):
+				if (page)*n_per_page + page_order < long_specid.shape[0]:
+					group_dat = page_dat[page_dat['enrollid'].astype(str).\
+						map(specid_page_order) == page_order]
+					specid = [key for key, val in specid_page_order.items() if 
+						val == page_order and specid_page[key] == page][0]
+					# now also group by segment
+					subfig = subfigs[page_order]
+					# blank line for spacing
+					subfig.suptitle(f'\n{specid}')
+					axs = subfig.subplots(nrows=1, ncols=3)
+					for row_idx, row in group_dat.iterrows():
+						_ = axs[segment_order[row['segment']]].scatter([0,1], 
+							[row[0], row[1]],
+							facecolor='#eaeaea', edgecolor='#333333', zorder=4)
+						_ = axs[segment_order[row['segment']]].plot([0,1], 
+							[row[0], row[1]],
+							color='#333333', zorder=2)
+					for ax_idx, ax in enumerate(axs):
+						_ = ax.set_xlabel('days post symptom onset', size=16)
+						_ = ax.set_xticks([0,1])
+						_ = ax.set_xticklabels(within_host_order_dict[int(specid)].values)
+						_ = ax.set_title(f'{[key for key, val in segment_order.items() if val == ax_idx][0]}')
+						#_ = ax.set_yticks([])
+						ax.grid(color='#eaeaea',axis='y')
+						ax.set_ylabel('rel. read support', size=16)
+			pdf.savefig(fig)
+			plt.close()
 
 
 

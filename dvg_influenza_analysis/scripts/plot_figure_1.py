@@ -33,9 +33,6 @@ def run():
 	parser.add_argument('--mapDir', default=None)
 	parser.add_argument('--padSize', default=None, type=int)
 	parser.add_argument('--repSpecid')
-	#parser.add_argument('--pb2Gene')
-	#parser.add_argument('--pb1Gene')
-	#parser.add_argument('--paGene')
 	args = parser.parse_args()
 	#args.dat = 'output/parsed_dvgs_0.005_True_True_0_all.tsv'
 	# todo infer from file??
@@ -44,6 +41,7 @@ def run():
 	#args.mapDir = "data/*_map.tsv"
 	#args.allRuns = "data/all_runs.tsv"
 
+	# consolidates genome positions across reference genomes
 	segment_dat = \
 		[pd.read_csv(i, sep='\t', index_col=0) for i in glob.glob(args.mapDir)]
 	segment_len = {i.index.name: max(i.index)-(args.padSize*2) for i in segment_dat}
@@ -55,22 +53,24 @@ def run():
 	dat['segment'] = dat['segment'].fillna('NA')
 
 	
-	# create an ordering of the specids, by sample date arbitrary
+	# create an ordering of the specids, by sample date
 	# first, subset run table to just samples we have
-	all_runs = pd.read_csv(args.allRuns, sep='\t')
+	all_runs = pd.read_csv(args.allRuns, sep='\t').\
+		assign(enrollid = lambda k: k.Isolate)
 	all_runs['lib'] = all_runs['lib'].apply(lambda k: ''.join([i for i in k.split('_')[0] if not i.isdigit()]))
 	all_runs = all_runs[(all_runs['type'] == 'clinical')]
 	all_runs['Collection_date'] = pd.to_datetime(all_runs['Collection_date'])
-	all_runs = all_runs[['SPECID', 'Collection_date']].drop_duplicates().\
+	all_runs = all_runs[['SPECID', 'enrollid', 'Collection_date']].drop_duplicates().\
 		sort_values(by="Collection_date").reset_index(drop=True)
 	specid_sort_dict = {i['SPECID']: idx for idx, i in all_runs.iterrows()}
-	
+	enrollid_dict = {i.SPECID:i.enrollid for idx, i in all_runs.iterrows()}
 	# number of relative dvg reads per sample per segment
 	# need to reset index to account for samples with no dvg reads
 	sample_seg_rel_reads_df = \
 		dat.groupby(['segment', 'Specid'])['Rel_support'].sum().reindex(
 			pd.MultiIndex.from_product(
-			[segment_order.keys(), all_runs['SPECID'].unique()], names=['segment', 'Specid'])).fillna(
+			[segment_order.keys(), all_runs['SPECID'].unique()], 
+				names=['segment', 'Specid'])).fillna(
 		0.0).reset_index()
 	sample_seg_rel_reads_df['x'] = \
 		sample_seg_rel_reads_df['segment'].map(segment_order)
@@ -90,8 +90,11 @@ def run():
 		sample_seg_n_dvgs[['segment', 0]].groupby('segment')}
 	# how many specids do we observe dvgs in?
 	output = []
+	output.append(f'There are a total of {sample_seg_n_dvgs["Specid"].unique().shape[0]} samples')
+	output.append(f'collected from {sample_seg_n_dvgs["Specid"].map(enrollid_dict).unique().shape[0]} individuals')
 	output.append(f'DVGs observed in {(sample_seg_n_dvgs[["Specid", 0]].groupby("Specid").sum() > 0).sum().values[0]}')
 	output[-1] += f'/{sample_seg_n_dvgs["Specid"].unique().shape[0]} SPECIDS'
+
 
 	# total relative reads per sample per segment
 	sample_seg_rel_reads_dict = {idx: 
@@ -99,7 +102,6 @@ def run():
 
 
 	# statistical test, DVG read support in PB2, PB1, PA, NS v. HA, NP, NA, M. 
-
 	t = mannwhitneyu(sample_seg_rel_reads_df[
 			sample_seg_rel_reads_df['segment'].isin(['PB2', 'PB1', 'PA', 'NS'])]['Rel_support'],
 		sample_seg_rel_reads_df[
@@ -126,9 +128,6 @@ def run():
 
 	
 	# finally, plot
-
-
-
 	plot_style()
 	fig = plt.figure(figsize=(6.4*3, 4.8*2.5), constrained_layout=True)
 	# heatmap
@@ -144,8 +143,6 @@ def run():
 	ax0.set_xlabel('segment', fontsize=20)
 	ax0.set_yticks([])
 	ax0.set_ylabel('sample', fontsize=20)
-	
-	
 
 	# unique DVGs per sample per segment
 	ax2 = fig.add_subplot(spec[:5, 4:7])
@@ -170,11 +167,8 @@ def run():
 	ax3.set_ylabel('unique DVG species per sample', size=mpl.rcParams['axes.titlesize'])
 	ax3.grid(axis='y', color='#eaeaea')
 
-
-	
 	# representative junction
 	# pb2
-	# need to read in and parse gff3
 	ax4 = fig.add_subplot(spec[5:, 4:6])
 	for idx, row in dat[(dat['Specid'] == args.repSpecid) & (dat['segment'] == 'PB2')].iterrows():
 		_ = ax4.plot([row['mapped_start'] - args.padSize, row['mapped_stop'] - args.padSize], 
